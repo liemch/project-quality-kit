@@ -15,7 +15,7 @@
 
 ### Changed
 
-- (none yet)
+- `upgrade-quality.sh` cũng refresh `GETTING-STARTED.md`, `CHANGELOG.md`, `_meta/project.smoke.yml` (trước đây clone upgrade xong vẫn giữ guide cũ).
 
 ### Fixed
 

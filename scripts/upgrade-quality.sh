@@ -24,7 +24,7 @@
 #   .claude/skills/**          (agent skills — re-wire after upgrade)
 #   playwright.config.ts
 #   package.json (merge devDependencies only — never wipe scripts)
-#   docs/**, README.md, COOKBOOK.md
+#   docs/**, README.md, COOKBOOK.md, GETTING-STARTED.md, CHANGELOG.md
 #   ai-review/**, ci/**
 #   _meta/project.example.yml, _meta/project.smoke.yml, _meta/versions/engine-version.yml
 #   scripts/verify-base-template.sh, scripts/lib/**
@@ -97,9 +97,12 @@ for rel in \
   docs \
   README.md \
   COOKBOOK.md \
+  GETTING-STARTED.md \
+  CHANGELOG.md \
   ai-review \
   ci \
   _meta/project.example.yml \
+  _meta/project.smoke.yml \
   _meta/versions/engine-version.yml
 do
   copy_path "$rel"
