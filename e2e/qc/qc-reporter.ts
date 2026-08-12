@@ -15,7 +15,7 @@ type QcRow = {
 
 /**
  * Collects Playwright results keyed by qcId annotation for Excel export.
- * On failure, records screenshot/video/trace attachment paths when present.
+ * Skips writing inside Base template (project-quality-kit) so smoke does not leak results.json.
  */
 class QcReporter implements Reporter {
   private rows: QcRow[] = [];
@@ -49,6 +49,10 @@ class QcReporter implements Reporter {
   onEnd(_result: FullResult): void {
     if (!this.rows.length) return;
     const kitRoot = findKitRoot();
+    if (path.basename(kitRoot) === "project-quality-kit" && process.env.QUALITY_ALLOW_BASE_INIT !== "1") {
+      console.log("[qc-reporter] skip write on Base template (no qc/results.json leak)");
+      return;
+    }
     const cfg = loadProjectConfig(kitRoot);
     const out = path.resolve(kitRoot, cfg.qc.results_out || "qc/results.json");
     fs.mkdirSync(path.dirname(out), { recursive: true });

@@ -19,9 +19,11 @@
 #   e2e/fixtures/{core,crud-resource,harness,load-config}.ts
 #   e2e/fixtures/adapters/**
 #   e2e/fixtures/factories/**
+#   e2e/fixtures/ui/**
 #   e2e/fixtures/domains/example-crud.ts   (demo only; other domains preserved)
 #   e2e/qc/**
 #   e2e/specs/smoke/**
+#   e2e/specs/auth.setup.ts
 #   scripts/**
 #   .claude/skills/**          (agent skills — re-wire after upgrade)
 #   playwright.config.ts
@@ -94,9 +96,17 @@ for rel in \
   e2e/fixtures/load-config.ts \
   e2e/fixtures/adapters \
   e2e/fixtures/factories \
+  e2e/fixtures/ui \
   e2e/fixtures/domains/example-crud.ts \
   e2e/qc \
   e2e/specs/smoke \
+  e2e/specs/auth.setup.ts \
+  playwright/.auth/.gitkeep \
+  e2e/pages/.gitkeep \
+  tsconfig.json \
+  .gitignore \
+  .gitattributes \
+  .env.example \
   scripts \
   .claude/skills \
   playwright.config.ts \

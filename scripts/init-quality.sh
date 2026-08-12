@@ -21,6 +21,7 @@
 #   --wire-web-scripts        Add convenience npm scripts into the web package.json
 #   --no-wire-skills          Skip symlinking /.claude/skills into workspace (default: wire ON)
 #   --no-npm-install          Skip npm install + playwright chromium (default: install ON)
+#   --git-remote <url>        After init: git init (if needed) + set origin to team quality remote
 #   --dry-run                 Print plan only
 #   -h | --help
 #
@@ -39,6 +40,7 @@ BASE_PATH=""
 WIRE_WEB=0
 WIRE_SKILLS=1
 NPM_INSTALL=1
+GIT_REMOTE=""
 DRY_RUN=0
 
 log()  { printf '[quality-init] %s\n' "$*"; }
@@ -63,6 +65,7 @@ while [[ $# -gt 0 ]]; do
     --wire-web-scripts) WIRE_WEB=1; shift;;
     --no-wire-skills) WIRE_SKILLS=0; shift;;
     --no-npm-install) NPM_INSTALL=0; shift;;
+    --git-remote) GIT_REMOTE="$2"; shift 2;;
     --dry-run) DRY_RUN=1; shift;;
     -h|--help) usage;;
     *) die "Unknown flag: $1";;
@@ -262,6 +265,7 @@ log "  api=$API_REL port=$API_PORT prefix=$API_PREFIX"
 log "  wire_web_scripts=$WIRE_WEB"
 log "  wire_skills=$WIRE_SKILLS"
 log "  npm_install=$NPM_INSTALL"
+log "  git_remote=${GIT_REMOTE:-"(none — recommend team remote later)"}"
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   if [[ "$WIRE_SKILLS" -eq 1 ]]; then
@@ -270,6 +274,9 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
   fi
   if [[ "$NPM_INSTALL" -eq 1 ]]; then
     log "Dry-run would also: npm install && npx playwright install chromium"
+  fi
+  if [[ -n "$GIT_REMOTE" ]]; then
+    log "Dry-run would also: git init (if needed) + remote origin=$GIT_REMOTE"
   fi
   log "Dry-run — no files written"
   exit 0
@@ -437,7 +444,46 @@ else
   log "Skipped npm install (--no-npm-install). Run later: npm install && npx playwright install chromium"
 fi
 
+# ── Optional: team git remote (never points at Base template) ─────
+if [[ -n "$GIT_REMOTE" ]]; then
+  if [[ "$GIT_REMOTE" == *"project-quality-kit"* ]]; then
+    warn "git-remote looks like Base template URL — use the team's *-quality remote instead"
+  fi
+  if ! command -v git >/dev/null 2>&1; then
+    warn "git not found — skip --git-remote"
+  else
+    if [[ ! -d "$REPO_ROOT/.git" ]]; then
+      log "git init in clone…"
+      (cd "$REPO_ROOT" && git init -b main) || (cd "$REPO_ROOT" && git init)
+    fi
+    # If origin still points at Base (fresh git clone of template), rename to keep upgrade source
+    if (cd "$REPO_ROOT" && git remote get-url origin >/dev/null 2>&1); then
+      ORIGIN_URL="$(cd "$REPO_ROOT" && git remote get-url origin)"
+      if [[ "$ORIGIN_URL" == *"project-quality-kit"* ]] && ! (cd "$REPO_ROOT" && git remote get-url upstream-quality-kit >/dev/null 2>&1); then
+        log "Renaming origin (Base) → upstream-quality-kit"
+        (cd "$REPO_ROOT" && git remote rename origin upstream-quality-kit)
+      fi
+    fi
+    if (cd "$REPO_ROOT" && git remote get-url origin >/dev/null 2>&1); then
+      log "Updating origin → $GIT_REMOTE"
+      (cd "$REPO_ROOT" && git remote set-url origin "$GIT_REMOTE")
+    else
+      log "Adding origin → $GIT_REMOTE"
+      (cd "$REPO_ROOT" && git remote add origin "$GIT_REMOTE")
+    fi
+    log "Git ready. Commit project files then: git push -u origin main"
+    if (cd "$REPO_ROOT" && git remote get-url upstream-quality-kit >/dev/null 2>&1); then
+      log "Kept remote upstream-quality-kit for /quality-upgrade --from"
+    fi
+  fi
+else
+  log "Tip: later bind team remote — ./scripts/init-quality.sh … --git-remote <url>"
+  log "     or see GETTING-STARTED.md §7 (do not push project data to Base)."
+fi
+
 log "Done. Next:"
 log "  npm run test:e2e:smoke"
 log "  # or agent: /quality-test , /quality-qc-import"
 log "  # QC Excel: cp your file to qc/input/ && npm run qc:import"
+log "  # Real mode: docs/auth-real.md"
+log "  # CI smoke: ci/README.md"

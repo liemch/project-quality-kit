@@ -99,7 +99,12 @@ function main() {
   let ids = [];
   if (args.id) {
     ids = [args.id];
-  } else if ((args.priority || args.group || args.sheet) && fs.existsSync(catalogPath)) {
+  } else if (args.priority || args.group || args.sheet) {
+    if (!fs.existsSync(catalogPath)) {
+      console.error("[qc:run] Catalog filter used but no catalog at", catalogPath);
+      console.error("[qc:run] Run /quality-qc-import (or npm run qc:import:py) first.");
+      process.exit(1);
+    }
     const catalog = JSON.parse(fs.readFileSync(catalogPath, "utf8"));
     ids = (catalog.cases || [])
       .filter((c) => !args.priority || String(c.priority).toLowerCase() === args.priority.toLowerCase())
@@ -107,6 +112,10 @@ function main() {
       .filter((c) => !args.sheet || String(c.sheet).toLowerCase() === args.sheet.toLowerCase())
       .map((c) => c.id);
     console.log(`[qc:run] catalog filter matched ${ids.length} id(s)`);
+    if (!ids.length) {
+      console.error("[qc:run] No cases matched filter — refusing to run full suite.");
+      process.exit(1);
+    }
   }
 
   guardEmptyPass(ids, args);
@@ -120,7 +129,6 @@ function main() {
   else if (ids.length > 1) grepParts.push(`(${ids.map(idGrep).join("|")})`);
 
   const env = { ...process.env };
-  if (ids.length) env.PW_QC_IDS = ids.join(",");
   if (args.observe) {
     env.PW_OBSERVE = "1";
     env.PW_SLOWMO = args.slowmo || env.PW_SLOWMO || "400";

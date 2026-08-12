@@ -1,0 +1,11 @@
+# GitLab CI — Base template health (run inside project-quality-kit repo)
+quality:verify:base:
+  stage: test
+  image: node:22-bookworm
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  script:
+    - npm ci || npm install --no-fund --no-audit
+    - npm run verify:base
+  allow_failure: false

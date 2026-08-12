@@ -35,6 +35,7 @@ catalogs, Excel files, generated stubs, domains, and real specs belong in the
 | Project name | `--name` | yes | |
 | Project code | `--code` | yes | uppercased by script |
 | Wire web scripts? | `--wire-web-scripts` | ask (default yes) | npm stubs on FE |
+| Team git remote? | `--git-remote <url>` | ask (optional) | `git init` + origin **đội** — không URL Base |
 | Wire skills? | default **ON** | ask only if user wants off | use `--no-wire-skills` to skip |
 | npm install? | default **ON** | ask only if user wants off | use `--no-npm-install` to skip |
 | KB / web / port / base | as needed | if no KB | auto from KB when present |
@@ -43,9 +44,9 @@ catalogs, Excel files, generated stubs, domains, and real specs belong in the
 
 ```bash
 cd "$KIT_ROOT"
-./scripts/init-quality.sh --name "…" --code "…" [--wire-web-scripts] --dry-run
-# show plan (includes wire_skills + npm_install) → on approve:
-./scripts/init-quality.sh --name "…" --code "…" [--wire-web-scripts]
+./scripts/init-quality.sh --name "…" --code "…" [--wire-web-scripts] [--git-remote URL] --dry-run
+# show plan (includes wire_skills + npm_install + git_remote) → on approve:
+./scripts/init-quality.sh --name "…" --code "…" [--wire-web-scripts] [--git-remote URL]
 ```
 
 Init **automatically**:

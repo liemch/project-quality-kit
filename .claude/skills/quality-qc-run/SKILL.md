@@ -17,7 +17,10 @@ Agent **phải tự chạy** lệnh.
 
 ## Filters
 
-`--id TC_03.1` | `--sheet Template` | `--priority High` | `--group Functional` | `--grep …`
+`--id TC_03.1` | `--sheet Template` | `--priority High` | `--group Functional` | `--grep …`  
+`--project mock` (default) · `--slowmo N` · passthrough args after flags
+
+Catalog filters require `qc/catalog.json`; empty match → exit 1 (không chạy full suite).
 
 ## Display
 

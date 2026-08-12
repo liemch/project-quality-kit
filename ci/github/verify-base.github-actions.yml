@@ -1,0 +1,19 @@
+# GitHub Actions — Base template verify (project-quality-kit repo)
+name: quality-verify-base
+
+on:
+  pull_request:
+  push:
+    branches: [main, master]
+
+jobs:
+  verify-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci || npm install --no-fund --no-audit
+      - run: npm run verify:base

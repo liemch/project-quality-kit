@@ -22,6 +22,8 @@ for f in \
   scripts/verify-base-template.sh \
   scripts/lib/refuse-base.mjs \
   e2e/specs/qc/.gitkeep \
+  e2e/pages/.gitkeep \
+  playwright/.auth/.gitkeep \
   qc/input/.gitkeep
 do
   [[ -e "$ROOT/$f" ]] && ok "exists $f" || bad "missing $f"

@@ -104,7 +104,7 @@ function main() {
 
   for (const sheetName of wb.SheetNames) {
     if (SKIP_SHEETS.has(sheetName)) continue;
-    if (args.sheet && sheetName !== args.sheet) continue;
+    if (args.sheet && String(sheetName).toLowerCase() !== args.sheet.toLowerCase()) continue;
     const ws = wb.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null, raw: false });
     // Find header row containing "Testcase ID"
@@ -126,7 +126,7 @@ function main() {
       if (!id || !/^TC_/i.test(id)) continue;
       const priority = col(map, row, "priority");
       const group = col(map, row, "group");
-      if (args.priority && !priority.toLowerCase().includes(args.priority.toLowerCase())) continue;
+      if (args.priority && priority.toLowerCase() !== args.priority.toLowerCase()) continue;
       if (args.group && group.toLowerCase() !== args.group.toLowerCase()) continue;
 
       cases.push({

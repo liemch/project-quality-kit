@@ -1,14 +1,8 @@
-# CI fragments (placeholder)
+# GitLab CI fragments (Quality Kit)
 
-Future: reusable GitLab CI jobs for:
+See parent [`../README.md`](../README.md).
 
-- `quality:e2e:smoke`
-- `quality:qc:p1`
-- `quality:ai-review` (phase 2)
-
-Projects include snippets via:
-
-```yaml
-include:
-  - local: '../<project>-quality/ci/gitlab/e2e.gitlab-ci.yml'
-```
+| File | Job |
+|------|-----|
+| `e2e.gitlab-ci.yml` | `quality:e2e:smoke` on clone |
+| `verify-base.gitlab-ci.yml` | `quality:verify:base` on Base |

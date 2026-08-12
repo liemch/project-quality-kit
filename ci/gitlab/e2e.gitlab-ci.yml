@@ -1,0 +1,33 @@
+# GitLab CI — Quality Kit smoke (include from workspace or quality repo)
+#
+# include:
+#   - local: '<project>-quality/ci/gitlab/e2e.gitlab-ci.yml'
+#
+# Optional variables:
+#   QUALITY_KIT_DIR   default: "." (cwd = quality clone) or "fti-agreement-management-quality"
+#   PW_SKIP_WEBSERVER set "1" if FE is not available in CI
+
+.quality_kit_rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+quality:e2e:smoke:
+  extends: .quality_kit_rules
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.61.1-jammy
+  variables:
+    QUALITY_KIT_DIR: "${QUALITY_KIT_DIR:-.}"
+    CI: "true"
+  script:
+    - cd "$QUALITY_KIT_DIR"
+    - npm ci || npm install --no-fund --no-audit
+    - npx playwright install --with-deps chromium
+    - npm run test:e2e:smoke
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - ${QUALITY_KIT_DIR}/playwright-report/
+      - ${QUALITY_KIT_DIR}/test-results/
+  allow_failure: false

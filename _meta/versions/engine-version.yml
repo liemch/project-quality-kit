@@ -1,8 +1,11 @@
 # Engine version pin — bump when publishing an upgradeable release of this kit.
-engine_version: "0.1.4"
+engine_version: "0.1.5"
 # Set by init-quality.sh in a <project>-quality clone; keep null on Base.
 initialized_at: null
 history:
+  - version: "0.1.5"
+    date: "2026-08-12"
+    notes: "CI smoke, AntD helpers, auth-real, webServer DX, init --git-remote; fix double-project run, Base results leak, auth cookies, qc:run filter safety."
   - version: "0.1.4"
     date: "2026-08-12"
     notes: "P0–P3 polish: batch implement, coverage dashboard, empty-pass guard, richer export, fail artifacts, seed factories, AI-review scaffold."

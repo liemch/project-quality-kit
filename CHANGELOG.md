@@ -23,6 +23,35 @@
 
 ---
 
+## [0.1.5] — 2026-08-12
+
+### Added
+
+- **CI smoke snippets:** `ci/gitlab/e2e.gitlab-ci.yml`, `verify-base.gitlab-ci.yml`, `ci/github/*.yml` + `ci/README.md`.
+- **Ant Design helpers:** `e2e/fixtures/ui/antd.ts` (table, modal, search debounce, select, switch, messages).
+- **Auth real:** `docs/auth-real.md`, `e2e/specs/auth.setup.ts`, adapter accepts `E2E_REAL_TOKEN` / `token_env` shortcut.
+- **webServer DX:** `PW_SKIP_WEBSERVER`, `PW_WEBSERVER_LOG`, `PW_WEBSERVER_TIMEOUT_MS`, startup log URL.
+- **init `--git-remote <url>`:** `git init` (if needed) + `origin` đội; rename Base origin → `upstream-quality-kit`.
+- `.gitkeep` for `e2e/pages/` and `playwright/.auth/`.
+
+### Changed
+
+- `playwright.config.ts`: default = **mock only**; real mode = `setup` → `chromium` only (`test:e2e-real --project=chromium`).
+- Upgrade refreshes `e2e/fixtures/ui/**`, `auth.setup.ts`, `tsconfig.json`, `.gitignore`, `.gitattributes`, `.env.example`, gitkeeps.
+- COOKBOOK / README updated for CI, AntD, auth, webServer env, git-remote.
+
+### Fixed
+
+- Auth real: cookie both `localhost`+`127.0.0.1`; `webBaseURL` + `addInitScript` before navigate (no port-80 bug).
+- `qc-reporter` skips write on Base template (smoke không leak `qc/results.json`).
+- `qc:run` refuses full-suite when catalog filter missing/empty; remove dead `PW_QC_IDS`.
+- `qc:import` priority/sheet filters = exact match (aligned with list/run).
+- GitHub smoke workflow: drop missing `package-lock.json` cache path.
+- README architecture typo `.ai-review/` → `ai-review/`.
+- LF enforcement in `.gitattributes` for `*.ts` / `*.md` / yaml.
+
+---
+
 ## [0.1.4] — 2026-08-12
 
 ### Added

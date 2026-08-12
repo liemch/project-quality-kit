@@ -49,7 +49,8 @@ Tên folder nên theo pattern `<project>-quality` (vd `fti-agreement-management-
 ./scripts/init-quality.sh \
   --name "My Project" \
   --code myproj \
-  --wire-web-scripts
+  --wire-web-scripts \
+  --git-remote git@github.com:org/my-project-quality.git
 ```
 
 Script sẽ:
@@ -59,6 +60,7 @@ Script sẽ:
 3. Wire skill `/quality*` vào `<workspace>/.claude/skills/` + blurb `CLAUDE.md`  
 4. Chạy `npm install` + `npx playwright install chromium`  
 5. (Nếu `--wire-web-scripts`) thêm script tiện vào `package.json` của web  
+6. (Nếu `--git-remote`) `git init` nếu cần + `origin` remote đội  
 
 ### Không có KB — truyền tay FE
 
@@ -83,6 +85,7 @@ Script sẽ:
 | Flag | Ý nghĩa |
 |------|---------|
 | `--wire-web-scripts` | Thêm `test:e2e*` / `qc:*` vào web |
+| `--git-remote <url>` | `git init` (nếu cần) + `origin` remote **đội** (không URL Base) |
 | `--no-wire-skills` | Không symlink skill |
 | `--no-npm-install` | Không `npm install` / Chromium (CI đã có sẵn) |
 
@@ -185,7 +188,7 @@ Nếu đã `--wire-web-scripts`, từ web cũng gọi được `npm run test:e2e
 
 ## 7. Commit clone dự án (git riêng — khuyến nghị)
 
-Clone **không** dùng chung remote với Base. Mỗi dự án một repo `*-quality` để giữ specs đã implement.
+Nhanh nhất: truyền `--git-remote` lúc init. Hoặc tay:
 
 ```bash
 cd my-project-quality
