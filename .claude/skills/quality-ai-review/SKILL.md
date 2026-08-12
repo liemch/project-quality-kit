@@ -1,34 +1,33 @@
 ---
 name: quality-ai-review
 description: >
-  Placeholder for AI-review CI rules inside Project Quality Kit (phase 2). Use
-  when the user says "/quality-ai-review", "AI review pipeline", or asks to
-  generate CI review rules for the quality sibling. Currently documents the
-  planned layout only — do not invent production CI jobs yet.
+  AI-review CI scaffold inside Project Quality Kit (phase 2). Use when the user
+  says "/quality-ai-review", "AI review pipeline", or asks to draft CI review
+  rules for the quality sibling. Scaffold exists under ai-review/ — do not invent
+  live credentials or claim the job is production-wired unless the user asks to
+  enable it.
 ---
 
-# /quality-ai-review — Phase 2 placeholder
+# /quality-ai-review — Phase 2 scaffold
 
 ## Current state
 
-`ai-review/` in the kit is a **placeholder**. Do not generate real CI credentials or claim jobs are wired.
+`ai-review/` có **rules + prompts + CI templates** — **chưa** gắn secret/model thật.
 
-## When asked to proceed (phase 2)
+| Path | Role |
+|------|------|
+| `ai-review/rules/*.md` | Luật review (general + Playwright/QC) |
+| `ai-review/prompts/review-system.md` | System prompt gợi ý |
+| `ai-review/ci/*.tpl` | Snippet GitHub Actions / GitLab CI |
+| `ai-review/project/` | Luật riêng clone (upgrade **không** đè) |
 
-1. Confirm with user before writing CI job files.
-2. Suggested layout (from `ai-review/README.md`):
+## When user explores
 
-```
-ai-review/
-  rules/
-  prompts/
-  project/          # project-owned (upgrade-safe)
-  ci-job.yml.tpl
-```
+Chỉ rõ phase-2 + trỏ `ai-review/README.md`. Offer draft design / copy tpl — không ship CI unverified.
 
-3. Prefer include-snippets under `ci/gitlab/` rather than editing app repos’ pipelines blindly.
-4. After adding engine files, remind: `/quality-upgrade` consumers get them on next upgrade; project rules stay under `ai-review/project/`.
+## When user asks to enable
 
-## Reply if user only explores
-
-Explain phase-2 status + point to `ai-review/README.md` and `ci/gitlab/README.md`. Offer to draft a design, not ship unverified CI.
+1. Confirm provider + secret name.
+2. Copy tpl vào pipeline workspace/clone.
+3. Keep project overrides in `ai-review/project/`.
+4. Remind: empty-pass + secrets là hard rules đã viết sẵn.

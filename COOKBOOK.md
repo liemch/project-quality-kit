@@ -47,21 +47,24 @@ e2e/specs/**/*.spec.ts         ← tests
 
 See [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
-**Người mới:**
-
 ```text
 /quality-qc-import
-/quality-qc-implement TC_12.1
+/quality-qc-implement --sheet Template --priority High
+/quality-qc-coverage
 ```
 
-Shell:
-
 ```bash
-cp ~/Downloads/ISC_*_TestCase.xlsx qc/input/
-npm run qc:import:py
-# then implement via /quality-qc-implement (or hand-write + expect)
-npm run qc:run -- --id TC_12.1
-npm run qc:export
+npm run qc:list -- --sheet Template --status stub
+npm run qc:coverage -- --open
+npm run qc:run -- --sheet Template --priority High
+npm run qc:export -- --sheet Template
+# fail artifacts: test-results/  |  headed: add --headed
+```
+
+## 5b. Seed factories
+
+```ts
+import { makeListItem, padCode } from "../factories/seed";
 ```
 
 ## 6. Ant Design selector cheatsheet

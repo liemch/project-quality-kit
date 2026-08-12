@@ -1,0 +1,3 @@
+# Placeholder — add project-specific AI review rules here.
+# Engine upgrades refresh ai-review/rules; keep local overrides in this folder
+# and merge manually until upgrade preserves ai-review/project/.

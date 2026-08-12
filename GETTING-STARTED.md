@@ -123,33 +123,28 @@ npm run test:e2e:smoke
 
 ---
 
-## 4. (Tuỳ chọn) QC Excel — xem hệ thống đúng/sai theo 1 TC
+## 4. (Tuỳ chọn) QC Excel — xem hệ thống đúng/sai
 
-**Mục tiêu người mới:** import Excel → chọn 1 `TC_*` → biết Pass/Fail trên hệ thống.
+**Mục tiêu người mới:** import Excel → implement TC (1 cái hoặc cả sheet) → Pass/Fail.
 
 ```text
 /quality-qc-import
 /quality-qc-implement TC_12.1
+# hoặc cả sheet P1:
+/quality-qc-implement --sheet Template --priority High
+/quality-qc-coverage
 ```
 
 | Bước | Skill | Anh nhận được |
 |------|-------|----------------|
-| 1 | `/quality-qc-import` | Catalog (mô tả TC) — **chưa** kiểm tra hệ thống |
-| 2 | `/quality-qc-implement TC_xx.y` | Agent **viết test + chạy** → **Pass / Fail / Skip+blocker** |
-| 3 | `/quality-qc-run --id TC_xx.y` | Chỉ khi đã implement — chạy lại |
+| 1 | `/quality-qc-import` | Catalog — **chưa** kiểm hệ thống |
+| 2 | `/quality-qc-implement …` | Agent viết + chạy → **Pass / Fail / Skip** |
+| 3 | `/quality-qc-coverage` | Dashboard `qc/coverage.html` |
+| 4 | `/quality-qc-run` / `qc:export` | Chạy lại / Excel `qc/results.xlsx` (có sheet **QC Run Summary**) |
 
-Anh **không** cần tự mở file đổi `test.fixme`. Đó là việc của skill implement.
+Anh **không** cần tự sửa `test.fixme`. `qc:run` cảnh báo **empty-pass** (test không có `expect`).
 
-Shell tương đương (nếu không dùng agent):
-
-```bash
-cp ~/Downloads/ISC_*_TestCase.xlsx qc/input/
-npm run qc:import:py
-# rồi nhờ agent /quality-qc-implement — hoặc tự viết step trong e2e/specs/qc/…
-npm run qc:run -- --id TC_12.1
-```
-
-`/quality-qc-codegen` chỉ sinh khung backlog (`test.fixme` → skip). **Không** dùng codegen xong rồi “chạy TC” để kết luận hệ thống.
+Fail: xem `test-results/` (screenshot / video / trace — `retain-on-failure`).
 
 Chi tiết: [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
@@ -180,26 +175,43 @@ Recipes selector Ant Design: [COOKBOOK.md](./COOKBOOK.md).
 | Headed | `npm run test:e2e:headed` | `/quality headed` |
 | Observe (chậm, full screen) | `PW_OBSERVE=1 PW_SLOWMO=400 npm run test:e2e:headed` | `/quality observe` |
 | UI Mode | `npm run test:e2e:ui` | `/quality ui` |
-| Theo TC | `npm run qc:run -- --id TC_01.1` | `/quality-qc-run` |
+| Theo TC / sheet | `npm run qc:run -- --id TC_01.1` | `/quality-qc-run` |
+| Coverage | `npm run qc:coverage` | `/quality-qc-coverage` |
 | Config đang trỏ đâu | — | `/quality-status` |
 
 Nếu đã `--wire-web-scripts`, từ web cũng gọi được `npm run test:e2e:smoke` (script chuyển sang kit quality).
 
 ---
 
-## 7. Commit clone dự án (không commit Base)
+## 7. Commit clone dự án (git riêng — khuyến nghị)
+
+Clone **không** dùng chung remote với Base. Mỗi dự án một repo `*-quality` để giữ specs đã implement.
 
 ```bash
 cd my-project-quality
-git remote remove origin 2>/dev/null || true   # nếu còn trỏ upstream Base
-git remote add origin <remote-repo-quality-của-đội>
+
+# Nếu chưa phải git repo (copy tay / chưa init):
+git init
 git add .
 git commit -m "chore: init quality kit for My Project"
+
+# Remote đội (KHÔNG trỏ về project-quality-kit Base):
+git remote add origin <git-url-repo-quality-của-đội>
+git branch -M main
 git push -u origin main
 ```
 
-Commit trong clone: `_meta/project.yml`, domains, specs, (tuỳ team) catalog/stubs.  
-**Không** push data dự án ngược lên repo Base `project-quality-kit`.
+Nếu clone từ Base bằng `git clone` rồi đổi remote:
+
+```bash
+git remote rename origin upstream-quality-kit   # optional keep
+git remote add origin <git-url-repo-quality-của-đội>
+git push -u origin main
+```
+
+**Nên commit:** `_meta/project.yml`, `e2e/fixtures/domains/**`, specs đã implement, (tuỳ team) `qc/catalog.json`.  
+**Không commit:** secrets, `.auth/`, `node_modules/`, file Excel có credential.  
+**Không** push data dự án lên Base `project-quality-kit`.
 
 ---
 

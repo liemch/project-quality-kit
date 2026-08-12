@@ -1,6 +1,6 @@
 {
   "name": "project-quality-kit",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "description": "Sibling quality kit: Playwright e2e harness, QC Excel bridge, future AI-review CI modules",
   "scripts": {
@@ -13,6 +13,8 @@
     "qc:import": "node scripts/e2e/qc-import.mjs",
     "qc:import:py": "python3 scripts/e2e/qc-import.py",
     "qc:codegen": "node scripts/e2e/qc-codegen.mjs",
+    "qc:list": "node scripts/e2e/qc-list.mjs",
+    "qc:coverage": "node scripts/e2e/qc-coverage.mjs",
     "qc:run": "node scripts/e2e/qc-run.mjs",
     "qc:export": "node scripts/e2e/qc-export.mjs",
     "verify:base": "bash scripts/verify-base-template.sh"

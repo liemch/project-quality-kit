@@ -1,14 +1,13 @@
 ---
 name: quality-qc-implement
 description: >
-  Primary newbie path: take one QC Testcase ID from catalog, write a real
-  Playwright test (steps + assertions), then run it and report Pass/Fail for
-  the system under test. Use when the user says "/quality-qc-implement",
-  "/quality implement", "implement TC_12.1", "viết test cho TC", "chạy testcase
-  Excel xem hệ thống đúng sai", "automate TC", "làm testcase này chạy được",
-  or after import when they want to verify the app against a QC case — NOT when
-  they only want stubs (/quality-qc-codegen) or re-run an already-implemented
-  case (/quality-qc-run).
+  Primary newbie path: take one QC Testcase ID — or a sheet/priority wave —
+  from catalog, write real Playwright tests (steps + assertions), run them, and
+  report Pass/Fail for the system under test. Use when the user says
+  "/quality-qc-implement", "/quality implement", "implement TC_12.1",
+  "implement sheet Template", "implement P1 Template", "viết test cho TC",
+  "chạy testcase Excel xem hệ thống đúng sai", "automate TC", "làm hết sheet",
+  or after import when they want to verify the app against QC cases.
 ---
 
 # /quality-qc-implement — Excel TC → test thật → Pass/Fail hệ thống
@@ -19,106 +18,88 @@ description: >
 Import Excel xong → /quality-qc-implement TC_xx.y → agent viết + chạy → Pass/Fail
 ```
 
+Batch (cả sheet / P1):
+
+```text
+/quality-qc-implement --sheet Template --priority High
+```
+
 Người dùng **không** cần tự mở file đổi `test.fixme` → `test`. Agent làm giúp.
 
 Agent **phải tự implement + chạy** — không chỉ bảo user sửa tay / gõ `npm run …`.
 
-## Mental model (nói rõ với user nếu họ hỏi)
+## Mental model
 
-| Bước | Ai làm | Ý nghĩa |
-|------|--------|---------|
-| `/quality-qc-import` | script | Đưa Excel → `catalog.json` (mô tả TC) |
-| `/quality-qc-codegen` | script | (Tuỳ chọn) khung `test.fixme` — **chưa kiểm tra hệ thống** |
-| **`/quality-qc-implement TC_*`** | **agent** | Viết step + assert + chạy → **Pass/Fail hệ thống** |
-| `/quality-qc-run TC_*` | script | Chỉ chạy lại case **đã** implement |
-
-Import/codegen **không** trả lời “hệ thống đúng hay sai”. Chỉ implement + assert mới trả lời được.
+| Bước | Skill | Ý nghĩa |
+|------|-------|---------|
+| Import | `/quality-qc-import` | Catalog — chưa kiểm hệ thống |
+| **Implement** | **`/quality-qc-implement`** | Viết step + assert + chạy → **Pass/Fail** |
+| Coverage | `/quality-qc-coverage` hoặc `npm run qc:coverage` | Dashboard `qc/coverage.html` |
+| Chạy lại | `/quality-qc-run` | Case đã implement |
+| Export | `npm run qc:export` | `qc/results.xlsx` (+ sheet QC Run Summary) |
 
 ## Prerequisites
 
-1. Resolve `KIT_ROOT` (`*-quality` clone — không chạy trên Base `project-quality-kit`).
-2. `qc/catalog.json` tồn tại — else chạy `/quality-qc-import` trước.
-3. User cung cấp **một** `TC_*` (vd `TC_12.1`). Nếu thiếu → hỏi ID (có thể gợi ý vài High từ catalog).
-4. Web sibling / mock harness sẵn theo `_meta/project.yml` (smoke đã xanh thì ổn).
+1. Resolve `KIT_ROOT` (`*-quality` clone — không Base).
+2. `qc/catalog.json` — else `/quality-qc-import`.
+3. Filter từ user: `--id TC_*` **hoặc** `--sheet` / `--priority` / `--group`. Nếu thiếu hết → hỏi (gợi ý High stubs).
+4. Web sibling / mock harness theo `_meta/project.yml`.
 
-## Procedure (bắt buộc theo thứ tự)
-
-### 1. Load testcase từ catalog
+## Resolve wave (batch)
 
 ```bash
 cd "$KIT_ROOT"
-node -e "
-const c=require('./qc/catalog.json');
-const id=process.argv[1];
-const x=c.cases.find(t=>t.id===id);
-if(!x){console.error('NOT_FOUND',id); process.exit(1)}
-console.log(JSON.stringify(x,null,2));
-" TC_12.1
+# Liệt kê stub cần làm (JSON cho agent)
+npm run qc:list -- --sheet Template --priority High --status stub --json
 ```
 
-Ghi nhận: `title`, `sheet`, `priority`, `group`, `precondition`, `steps`, `expected`.
+- Không có `--id` nhưng có sheet/priority → **wave**: implement tuần tự các stub (và suspiciousEmpty) trong list.
+- Mặc định nếu user chỉ nói “implement Template” mà không nói priority → ưu tiên **`--priority High`**, hỏi trước khi làm Medium/Low.
+- Dừng sớm nếu webServer/infra gãy.
 
-### 2. Đảm bảo có stub file (nếu chưa)
+## Procedure (mỗi TC)
+
+### 1. Load case từ catalog / qc:list
+
+### 2. Stub file nếu thiếu
 
 ```bash
 npm run qc:codegen -- --id TC_12.1
 ```
 
-Hoặc tạo/sửa tay trong `e2e/specs/qc/<sheet-slug>.generated.spec.ts` (hoặc spec dedicated nếu ổn hơn).
+### 3. Implement thật — Hard rules
 
-Tìm spec hiện có:
+1. `test.fixme` → `test` **chỉ khi** đã có step.
+2. **Bắt buộc** ≥1 `expect(...)` meaningful. Cấm `void page`, `expect(true)`, chỉ match `TC_*`.
+3. Map Pre-condition / Steps / Expected từ Excel.
+4. Tái dùng domain harness; seed qua `e2e/fixtures/factories/seed.ts` (`makeListItem`, `padCode`) khi cần list/search.
+5. Đọc KB / web source khi cần URL, label, filter API.
+6. Mock mặc định; `real` chỉ khi user xin.
+7. Thiếu data/external → giữ `fixme`, báo blocker (không Pass).
 
-```bash
-rg -n 'description: "TC_12.1"|TC_12\.1' e2e/specs
-```
-
-### 3. Implement thật (Level B) — Hard rules
-
-1. Đổi `test.fixme(...)` → `test(...)` **chỉ khi** đã viết step.
-2. **Bắt buộc** có ít nhất một `expect(...)` meaningful (UI/API/state).  
-   **Cấm** “pass giả”:
-   - `void page;`
-   - `expect(true).toBeTruthy()`
-   - chỉ `expect("TC_…").toMatch(...)` (trừ smoke binding demo)
-3. Map Pre-condition / Steps / Expected từ Excel → thao tác Playwright.
-4. Dùng harness/domain nếu có (`e2e/fixtures/domains/`, COOKBOOK AntD selectors).
-5. Đọc KB / web routes khi cần URL, quyền, label thật (`knowledge-base` + `am-web` nếu FTIAM).
-6. Mock mode mặc định; `real` chỉ khi user xin + auth.real sẵn.
-7. Nếu **không đủ thông tin** để assert an toàn (thiếu data, phụ thuộc email/SMS bên ngoài, v.v.):
-   - giữ `test.fixme`
-   - **không** chạy như Pass
-   - báo rõ blocker + hỏi user (test data / headed / real mode)
-
-### 4. Chạy đúng 1 TC
+### 4. Chạy
 
 ```bash
-cd "$KIT_ROOT"
 npm run qc:run -- --id TC_12.1
-# headed nếu user muốn xem: --headed
+# headed: --headed
+# wave đã impl: npm run qc:run -- --sheet Template --priority High
 ```
 
-### 5. Báo cáo cho user (bắt buộc)
+`qc:run` cảnh báo **empty-pass**; CI có thể `QC_STRICT_EMPTY=1`.
 
-Trả lời ngắn, rõ:
+### 5. Báo cáo
 
-| Kết quả Playwright | Nói với user |
-|--------------------|--------------|
-| **passed** + có assert thật | **Pass** — hệ thống khớp expected đã automate cho `TC_*` |
-| **failed** | **Fail** — hệ thống / selector / giả định lệch; trích lỗi + file:line |
-| **skipped** (`fixme`) | Chưa kiểm tra được — còn blocker (nêu lý do) |
+| Kết quả | Nói với user |
+|---------|--------------|
+| passed + assert thật | **Pass** |
+| failed | **Fail** + lỗi + `test-results/` (screenshot/video/trace) |
+| skipped / blocker | Chưa kiểm được |
 
-Kèm: path spec đã sửa, tóm tắt step đã viết, gợi ý `--headed` nếu fail khó đọc.
-
-**Không** nói “testcase Pass” nếu body gần như trống.
-
-## Batch (nhiều TC)
-
-- Mặc định **1 TC / lần** (an toàn, dễ review).
-- User xin wave (vd “implement 5 P1 Functional sheet Template”) → làm tuần tự, báo bảng Pass/Fail/Skip từng ID; dừng sớm nếu infra gãy (webServer chết).
+**Batch:** bảng markdown `TC_* | Pass/Fail/Skip | note` + `npm run qc:coverage` + gợi ý `npm run qc:export -- --sheet Template`.
 
 ## See also
 
-- Chỉ import: `/quality-qc-import`
-- Chỉ sinh khung: `/quality-qc-codegen`
-- Chỉ chạy lại: `/quality-qc-run`
-- Docs: `docs/qc-excel-bridge.md`, `GETTING-STARTED.md`
+- `/quality-qc-coverage` — dashboard
+- `/quality-qc-run` — chạy lại
+- `/quality-qc-codegen` — chỉ khung
+- `docs/qc-excel-bridge.md`

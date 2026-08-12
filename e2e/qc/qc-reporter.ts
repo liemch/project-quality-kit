@@ -10,10 +10,12 @@ type QcRow = {
   file: string;
   durationMs: number;
   error?: string;
+  attachments?: string[];
 };
 
 /**
  * Collects Playwright results keyed by qcId annotation for Excel export.
+ * On failure, records screenshot/video/trace attachment paths when present.
  */
 class QcReporter implements Reporter {
   private rows: QcRow[] = [];
@@ -30,6 +32,9 @@ class QcReporter implements Reporter {
   onTestEnd(test: TestCase, result: TestResult): void {
     const ann = test.annotations.find((a) => a.type === this.annotationType);
     if (!ann?.description) return;
+    const attachments = (result.attachments || [])
+      .filter((a) => a.path)
+      .map((a) => `${a.name}:${a.path}`);
     this.rows.push({
       qcId: ann.description,
       title: test.title,
@@ -37,6 +42,7 @@ class QcReporter implements Reporter {
       file: test.location.file,
       durationMs: result.duration,
       error: result.error?.message,
+      attachments: attachments.length ? attachments : undefined,
     });
   }
 

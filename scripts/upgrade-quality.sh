@@ -18,6 +18,8 @@
 # Refreshed from upstream:
 #   e2e/fixtures/{core,crud-resource,harness,load-config}.ts
 #   e2e/fixtures/adapters/**
+#   e2e/fixtures/factories/**
+#   e2e/fixtures/domains/example-crud.ts   (demo only; other domains preserved)
 #   e2e/qc/**
 #   e2e/specs/smoke/**
 #   scripts/**
@@ -25,7 +27,8 @@
 #   playwright.config.ts
 #   package.json (merge devDependencies only — never wipe scripts)
 #   docs/**, README.md, COOKBOOK.md, GETTING-STARTED.md, CHANGELOG.md
-#   ai-review/**, ci/**
+#   ai-review/README.md, rules, prompts, ci   (preserve ai-review/project/)
+#   ci/**
 #   _meta/project.example.yml, _meta/project.smoke.yml, _meta/versions/engine-version.yml
 #   scripts/verify-base-template.sh, scripts/lib/**
 #
@@ -44,8 +47,9 @@ while [[ $# -gt 0 ]]; do
   case "$1" in
     --from) FROM="$2"; shift 2;;
     --ref) REF="$2"; shift 2;;
+    --kit) REPO_ROOT="$(cd "$2" && pwd)"; shift 2;;
     --dry-run) DRY_RUN=1; shift;;
-    -h|--help) sed -n '2,35p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
+    -h|--help) sed -n '2,40p' "$0" | sed 's/^# \{0,1\}//'; exit 0;;
     *) die "Unknown flag: $1";;
   esac
 done
@@ -89,6 +93,8 @@ for rel in \
   e2e/fixtures/harness.ts \
   e2e/fixtures/load-config.ts \
   e2e/fixtures/adapters \
+  e2e/fixtures/factories \
+  e2e/fixtures/domains/example-crud.ts \
   e2e/qc \
   e2e/specs/smoke \
   scripts \
@@ -99,7 +105,10 @@ for rel in \
   COOKBOOK.md \
   GETTING-STARTED.md \
   CHANGELOG.md \
-  ai-review \
+  ai-review/README.md \
+  ai-review/rules \
+  ai-review/prompts \
+  ai-review/ci \
   ci \
   _meta/project.example.yml \
   _meta/project.smoke.yml \
@@ -107,6 +116,12 @@ for rel in \
 do
   copy_path "$rel"
 done
+
+# Ensure ai-review/project exists for project-owned rules (never wiped)
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  mkdir -p "$REPO_ROOT/ai-review/project"
+  [[ -f "$REPO_ROOT/ai-review/project/.gitkeep" ]] || touch "$REPO_ROOT/ai-review/project/.gitkeep"
+fi
 
 # Merge package.json devDependencies
 if [[ "$DRY_RUN" -eq 0 ]]; then
@@ -119,12 +134,18 @@ a = json.loads(mine.read_text())
 b = json.loads(ups.read_text())
 deps = a.setdefault("devDependencies", {})
 deps.update(b.get("devDependencies") or {})
-# ensure quality scripts exist
+# ensure quality scripts exist / stay aligned with engine for qc:* and test:e2e*
 scripts = a.setdefault("scripts", {})
 for k, v in (b.get("scripts") or {}).items():
-    scripts.setdefault(k, v)
+    if k.startswith("qc:") or k.startswith("test:e2e") or k in ("verify:base", "test:e2e-real"):
+        scripts[k] = v
+    else:
+        scripts.setdefault(k, v)
+# align package version with upstream engine when present
+if b.get("version"):
+    a["version"] = b["version"]
 mine.write_text(json.dumps(a, indent=2, ensure_ascii=False) + "\n")
-print("[quality-upgrade] merged package.json devDependencies + missing scripts")
+print("[quality-upgrade] merged package.json scripts/devDependencies + version")
 PY
 fi
 

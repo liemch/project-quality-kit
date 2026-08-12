@@ -15,11 +15,37 @@
 
 ### Changed
 
-- `upgrade-quality.sh` cũng refresh `GETTING-STARTED.md`, `CHANGELOG.md`, `_meta/project.smoke.yml` (trước đây clone upgrade xong vẫn giữ guide cũ).
+- (none yet)
 
 ### Fixed
 
 - (none yet)
+
+---
+
+## [0.1.4] — 2026-08-12
+
+### Added
+
+- **P0** `/quality-qc-implement --sheet … --priority …` batch path + `npm run qc:list`.
+- **P0** `/quality-qc-coverage` + `npm run qc:coverage` → `qc/coverage.html` / `qc/coverage.json`.
+- **P1** Empty-pass guard in `qc:run` (WARN; `--strict-empty` / `QC_STRICT_EMPTY=1` to refuse).
+- **P1** Richer `qc:export`: sheet filter, Script path write-back, **QC Run Summary** sheet.
+- **P1** GETTING-STARTED: git init + remote đội cho clone (không dùng remote Base).
+- **P2** Fail artifacts: `trace/screenshot/video` retain-on-failure; reporter ghi `attachments`.
+- **P2** `e2e/fixtures/factories/seed.ts` (`makeListItem`, `padCode`, `seedMany`).
+- **P3** AI-review scaffold: `ai-review/rules`, `prompts`, `ci/*.tpl`, `project/` preserved on upgrade.
+
+### Changed
+
+- `upgrade-quality.sh`: refresh factories + example-crud; AI-review subpaths (preserve `ai-review/project/`); force-sync `qc:*` scripts + package version.
+- Playwright default `trace: retain-on-failure`.
+- Docs/skills/router updated for coverage + batch.
+
+### Fixed
+
+- `qc:list` / `qc:run` / `qc:export` `--sheet` / `--priority` match **exact** (tránh `Template` khớp `Email template`).
+- Empty-pass scanner: detect via `qcId` annotation + body `expect` (không vỡ vì title có `\"`).
 
 ---
 
@@ -34,6 +60,7 @@
 
 - `GETTING-STARTED.md` §4, `docs/qc-excel-bridge.md`, README/COOKBOOK, router `/quality`, import/codegen/run skills: next-step mặc định là **implement**, không “codegen rồi qc-run stub”.
 - `wire-quality-skills.sh` blurb CLAUDE.md thêm `/quality-qc-implement`.
+- `upgrade-quality.sh` cũng refresh `GETTING-STARTED.md`, `CHANGELOG.md`, `_meta/project.smoke.yml`.
 
 ### Fixed
 
@@ -55,52 +82,8 @@
 
 ### Changed
 
-- `e2e/fixtures/load-config.ts` — discover Base via `project.smoke.yml`; type includes `features.wire_skills`.
-- `e2e/specs/smoke/mock-ui.example.spec.ts` — skip when `web_dir` missing on disk (Base-safe).
-- `.gitignore` — ignore clone-owned `qc/catalog.json`, `qc/coverage.json`, `*.generated.spec.ts`.
-- Soften `project.example.yml` placeholders (`demo-web`, `/app`).
-- Engine pin `0.1.2`; Base `initialized_at: null`.
+- (see prior history in git)
 
 ### Fixed
 
-- `qc-run` `--id TC_x.y` no longer prefix-matches `TC_x.y0` (negative lookahead `(?!\d)`).
-- `qc-codegen` `stubbedCount` no longer double-counts on re-run (rescan after write).
-- `qc-export` loads `project.json` (not only `project.yml`); Excel header normalize parity with import.
-- `qc-import.mjs` prints by-group counts; shared config loader; refuse Base before requiring `xlsx`.
-
----
-
-## [0.1.1] — 2026-08-12
-
-### Added
-
-- Agent skills catalog `/quality*` under `.claude/skills/` + `scripts/wire-quality-skills.sh`.
-- `init-quality.sh` wires skills into workspace by default (`--no-wire-skills` to skip).
-- `qc:codegen` — Level A stubs (`test.fixme` + `qcId` + Pre/Steps/Expected) from `qc/catalog.json`.
-- Skill `/quality-qc-codegen`; router + README wiring.
-- Init refuses basename `project-quality-kit` unless `QUALITY_ALLOW_BASE_INIT=1`.
-
-### Changed
-
-- Docs: QC workflow import → codegen → implement → run → export.
-- Engine pin `0.1.1`.
-
-### Fixed
-
-- `qc-import` header normalize for Excel newlines / trailing `(hint)` (mjs + py).
-- `add-domain.sh` — write domain file via Python (avoid bash expanding `${}` in template).
-
----
-
-## [0.1.0] — 2026-08-12
-
-### Added
-
-- Initial scaffold: Playwright e2e harness (`core` / `crud-resource` / `harness` / domain example).
-- `init-quality.sh` — personalize clone from sibling KB (optional) or explicit web flags.
-- `upgrade-quality.sh` — refresh engine while preserving project-owned artifacts.
-- QC Excel bridge stubs: `qc:import`, `qc:run`, `qc:export` (+ Python import fallback).
-- Smoke specs: harness-only, mock-ui example, qc-annotation example.
-- Placeholders: `ai-review/`, `ci/gitlab/`.
-- Bilingual README + COOKBOOK + `docs/qc-excel-bridge.md`.
-- Engine pin `0.1.0`.
+- QC Excel headers with newlines; codegen `test.fixme`; `qc:run` id prefix (`TC_03.1` vs `TC_03.10`).

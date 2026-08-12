@@ -113,7 +113,8 @@ Keep project config, QC data, and generated specs in this \`<project>-quality\` 
 | \`/quality-wire\` | (Re)symlink skills vào workspace |
 | \`/quality-test\` | Chạy e2e / smoke |
 | \`/quality-qc-import\` | Import Excel QC → catalog |
-| \`/quality-qc-implement\` | **TC → viết test + chạy → Pass/Fail hệ thống** (luồng chính) |
+| \`/quality-qc-implement\` | **TC / sheet / P1 → viết test + chạy → Pass/Fail** (luồng chính) |
+| \`/quality-qc-coverage\` | Dashboard coverage \`qc/coverage.html\` |
 | \`/quality-qc-codegen\` | Sinh stub test.fixme (backlog, tuỳ chọn) |
 | \`/quality-qc-run\` | Chạy lại TC đã implement |
 | \`/quality-add-domain\` | Scaffold domain harness |

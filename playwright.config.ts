@@ -23,7 +23,8 @@ export default defineConfig({
 
   use: {
     baseURL: webBaseURL(cfg),
-    trace: OBSERVE ? "on" : "on-first-retry",
+    // Fail artifacts (P2): keep evidence when a QC/e2e case fails.
+    trace: OBSERVE ? "on" : "retain-on-failure",
     screenshot: OBSERVE ? "on" : "only-on-failure",
     video: OBSERVE ? "on" : "retain-on-failure",
     locale: process.env.PW_LOCALE || "vi-VN",

@@ -1,5 +1,6 @@
 import { defineDomainHarness } from "../harness";
 import { loadProjectConfig } from "../load-config";
+import { makeListItem, padCode } from "../factories/seed";
 
 /**
  * Demo domain — used by smoke UI test when the target app is NOT wired yet.
@@ -13,7 +14,6 @@ const base = cfg.web.base_path.replace(/\/$/, "") || "";
 export const { test, expect, makeRecords } = defineDomainHarness({
   url: `${base}/`,
   ready: async (page) => {
-    // Harness-level ready: just wait for document; UI smoke may assert more.
     await page.waitForLoadState("domcontentloaded");
   },
   functionCode: `${cfg.project.code}.DEMO.CRUD`,
@@ -22,12 +22,15 @@ export const { test, expect, makeRecords } = defineDomainHarness({
       path: "/demo-items",
       primary: true,
       seedCount: 3,
-      seed: (i) => ({
-        id: i,
-        name: `Demo item ${String(i).padStart(2, "0")}`,
-        isActive: true,
-      }),
-      writableFields: ["name", "isActive"],
+      keywordField: "searchText",
+      seed: (i) =>
+        makeListItem({
+          id: i,
+          code: padCode("DEMO", i),
+          name: `Demo item ${String(i).padStart(2, "0")}`,
+          isActive: true,
+          keywordFields: ["code", "name"],
+        }),
     },
   },
 });
