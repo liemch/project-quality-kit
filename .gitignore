@@ -2,7 +2,7 @@
 node_modules/
 playwright-report/
 test-results/
-playwright/.auth/
+playwright/.auth/*
 !playwright/.auth/.gitkeep
 blob-report/
 .DS_Store
