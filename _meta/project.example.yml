@@ -1,0 +1,75 @@
+# Project Quality Kit — per-project config
+# Generated/updated by: ./scripts/init-quality.sh
+# VI: File này gắn kit với workspace (web/api/kb). Không commit secret.
+# EN: Wires this kit to the sibling workspace. Never commit secrets.
+
+version: "1.0.0"
+
+project:
+  name: "{{PROJECT_NAME}}"
+  code: "{{PROJECT_CODE}}"
+
+# Sibling paths relative to this kit root
+paths:
+  workspace_root: ".."
+  kb_dir: "{{KB_DIR}}"          # e.g. ../demo-knowledge-base  (optional)
+  web_dir: "{{WEB_DIR}}"        # e.g. ../demo-web
+  api_dir: "{{API_DIR}}"        # optional
+
+web:
+  service_id: "{{WEB_SERVICE_ID}}"   # from KB manifest, e.g. demo-web
+  http_port: {{WEB_PORT}}            # e.g. 5173
+  base_path: "{{WEB_BASE_PATH}}"     # e.g. /app or /
+  package_manager: npm               # npm | pnpm | yarn
+  dev_command: "npm run dev"
+
+api:
+  service_id: "{{API_SERVICE_ID}}"
+  http_port: {{API_PORT}}
+  route_prefix: "{{API_ROUTE_PREFIX}}"
+
+auth:
+  # cookie-fake | storage-state | custom
+  strategy: cookie-fake
+  cookie_name: access_token
+  local_storage_keys:
+    - ACCESS_TOKEN
+    - access_token
+    - token
+  # Used by real-mode stub (team fills in)
+  real:
+    token_env: E2E_REAL_TOKEN
+    login_url: ""
+    token_endpoint: ""
+
+session:
+  # Paths the mock session handler serves (suffix match)
+  me: "/accounts/me"
+  permissions: "/accounts/permissions"
+  functions: "/accounts/functions"
+  my_apps: "/accounts/my-apps"
+  check_session: "/accounts/check-session"
+  app_code: "{{PROJECT_CODE}}"
+  baseline_permission:
+    function_code: "{{BASELINE_FUNCTION_CODE}}"
+    actions: ["VIEW"]
+
+dto:
+  # list response wrapper: { data: { items, totalCount } }
+  list_items_key: items
+  list_total_key: totalCount
+  data_envelope: data
+
+qc:
+  # ISC QC Excel bridge (optional)
+  excel_glob: "qc/input/*.xlsx"
+  catalog_out: "qc/catalog.json"
+  results_out: "qc/results.json"
+  # Map Playwright annotation type → Excel "Testcase ID"
+  annotation_type: qcId
+
+features:
+  wire_web_scripts: {{WIRE_WEB_SCRIPTS}}
+  wire_skills: true   # init wires /.claude/skills into workspace (use --no-wire-skills to skip)
+  e2e: true
+  ai_review: false   # phase 2

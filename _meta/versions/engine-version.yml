@@ -1,0 +1,14 @@
+# Engine version pin — bump when publishing an upgradeable release of this kit.
+engine_version: "0.1.2"
+# Set by init-quality.sh in a <project>-quality clone; keep null on Base.
+initialized_at: null
+history:
+  - version: "0.1.2"
+    date: "2026-08-12"
+    notes: "Base hygiene: smoke config fallback, refuse-base guards, verify-base-template, webServer gracefulShutdown, qc id/coverage/export fixes."
+  - version: "0.1.1"
+    date: "2026-08-12"
+    notes: "Agent skills (/quality*) + wire; qc:codegen Level A stubs (test.fixme) from Excel catalog."
+  - version: "0.1.0"
+    date: "2026-08-12"
+    notes: "Initial scaffold: e2e harness + init/upgrade + QC Excel bridge stub + AI-review placeholder."

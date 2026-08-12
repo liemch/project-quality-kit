@@ -1,0 +1,21 @@
+# Prefer JSON (written by init). project.yml is the editable source of truth in clones.
+node_modules/
+playwright-report/
+test-results/
+playwright/.auth/
+!playwright/.auth/.gitkeep
+blob-report/
+.DS_Store
+*.log
+.env
+.env.*
+!.env.example
+qc/input/*.xlsx
+!qc/input/.gitkeep
+qc/catalog.json
+qc/coverage.json
+qc/results.json
+qc/results.xlsx
+e2e/specs/qc/*.generated.spec.ts
+e2e/_tmp-shots/
+CLAUDE.local.md

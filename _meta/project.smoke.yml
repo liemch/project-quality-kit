@@ -1,0 +1,65 @@
+# Base-only smoke defaults — used when project.yml/json is absent.
+# Do NOT personalize this file for a real project; clone → init instead.
+version: "1.0.0"
+
+project:
+  name: "Quality Kit Base"
+  code: "QKIT"
+
+paths:
+  workspace_root: ".."
+  kb_dir: ""
+  web_dir: ""
+  api_dir: ""
+
+web:
+  service_id: "demo-web"
+  http_port: 5173
+  base_path: "/"
+  package_manager: npm
+  dev_command: "npm run dev"
+
+api:
+  service_id: "demo-api"
+  http_port: 8080
+  route_prefix: "/api"
+
+auth:
+  strategy: cookie-fake
+  cookie_name: access_token
+  local_storage_keys:
+    - ACCESS_TOKEN
+    - access_token
+    - token
+  real:
+    token_env: E2E_REAL_TOKEN
+    login_url: ""
+    token_endpoint: ""
+
+session:
+  me: "/accounts/me"
+  permissions: "/accounts/permissions"
+  functions: "/accounts/functions"
+  my_apps: "/accounts/my-apps"
+  check_session: "/accounts/check-session"
+  app_code: "QKIT"
+  baseline_permission:
+    function_code: "QKIT.OVERVIEW.DASHBOARD"
+    actions: ["VIEW"]
+
+dto:
+  list_items_key: items
+  list_total_key: totalCount
+  data_envelope: data
+
+qc:
+  excel_glob: "qc/input/*.xlsx"
+  catalog_out: "qc/catalog.json"
+  results_out: "qc/results.json"
+  annotation_type: qcId
+
+features:
+  wire_web_scripts: false
+  wire_skills: false
+  e2e: true
+  ai_review: false
