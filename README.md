@@ -5,10 +5,11 @@
 > **Trạng thái:** đây là bản **Base template** — không chứa config hay data của một dự án cụ thể. Engine hiện tại: **v0.1.2** (`_meta/versions/engine-version.yml`).
 
 > **Hai cửa vào:**
-> - 👤 **Người:** file này — giới thiệu, cài đặt, quick start, cấu trúc, cách dùng.
+> - 👤 **Người:** file này — giới thiệu, cấu trúc, cách dùng. **Chạy từ đầu?** → [`GETTING-STARTED.md`](./GETTING-STARTED.md).
 > - 🤖 **Agent:** [`.claude/skills/`](./.claude/skills/README.md) — skill `/quality*`; chi tiết vận hành trong [COOKBOOK.md](./COOKBOOK.md).
 >
 > **Muốn đi sâu hơn?**
+> - 🚀 [GETTING-STARTED.md](./GETTING-STARTED.md) — hướng dẫn lần đầu: clone → init → smoke → QC.
 > - 📖 [COOKBOOK.md](./COOKBOOK.md) — recipes, selector AntD, thêm domain.
 > - 🧪 [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md) — Excel ↔ Playwright (`qcId`).
 > - 📜 [CHANGELOG.md](./CHANGELOG.md) — lịch sử engine.
@@ -28,6 +29,8 @@
 9. [Upgrade engine](#9-upgrade-engine)
 10. [House rules](#10-house-rules)
 11. [Bản đồ tài liệu](#11-bản-đồ-tài-liệu)
+
+> **Lần đầu gắn kit?** Đọc [`GETTING-STARTED.md`](./GETTING-STARTED.md) trước, rồi quay lại README khi cần tra cứu.
 
 ---
 
@@ -339,7 +342,8 @@ Sau upgrade: `/quality-wire` nếu skill symlink lệch.
 
 | File | Nội dung |
 |------|----------|
-| [README.md](./README.md) | Onboarding (file này) |
+| [GETTING-STARTED.md](./GETTING-STARTED.md) | **Hướng dẫn chạy từ đầu** (clone → init → smoke → QC) |
+| [README.md](./README.md) | Tổng quan engine (file này) |
 | [CHANGELOG.md](./CHANGELOG.md) | Lịch sử engine |
 | [COOKBOOK.md](./COOKBOOK.md) | Recipes vận hành |
 | [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md) | QC Excel bridge |

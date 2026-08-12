@@ -12,6 +12,7 @@
 ### Added
 
 - `init-quality.sh` chạy **`npm install` + `npx playwright install chromium` mặc định** sau wire skills; tắt bằng `--no-npm-install`.
+- [`GETTING-STARTED.md`](./GETTING-STARTED.md) — hướng dẫn chạy từ đầu (clone → init → smoke → QC).
 
 ### Changed
 
