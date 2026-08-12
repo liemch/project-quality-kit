@@ -47,11 +47,20 @@ e2e/specs/**/*.spec.ts         ← tests
 
 See [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
+**Người mới:**
+
+```text
+/quality-qc-import
+/quality-qc-implement TC_12.1
+```
+
+Shell:
+
 ```bash
 cp ~/Downloads/ISC_*_TestCase.xlsx qc/input/
-npm run qc:import:py                 # → qc/catalog.json
-npm run qc:codegen -- --priority High
-npm run qc:run -- --priority High
+npm run qc:import:py
+# then implement via /quality-qc-implement (or hand-write + expect)
+npm run qc:run -- --id TC_12.1
 npm run qc:export
 ```
 

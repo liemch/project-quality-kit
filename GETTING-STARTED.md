@@ -100,6 +100,20 @@ Agent hỏi input → dry-run → chạy `init-quality.sh` giúp bạn.
 
 ## 3. Kiểm tra init thành công
 
+Trong Cursor / Claude (cwd bất kỳ trong workspace):
+
+```text
+/quality-status
+/quality-test
+```
+
+- `/quality-status` — kit root, `project.yml`, web/port/base, skill đã wire chưa  
+- `/quality-test` — **chạy smoke ngay** (không hỏi mode). Mode khác: `/quality headed`, `/quality observe`, `/quality ui`
+
+Kỳ vọng smoke: harness + qc-annotation **pass**; mock-ui pass nếu web sibling chạy được (webServer auto start).
+
+Không dùng agent? Kiểm tra tay trong clone:
+
 ```bash
 # Đang ở my-project-quality/
 test -f _meta/project.yml && echo "OK project.yml"
@@ -107,41 +121,35 @@ ls ../.claude/skills/quality* | head
 npm run test:e2e:smoke
 ```
 
-Kỳ vọng smoke: harness + qc-annotation **pass**; mock-ui pass nếu web sibling chạy được (webServer auto start).
-
-Hoặc:
-
-```text
-/quality-status
-/quality-test
-```
-
 ---
 
-## 4. (Tuỳ chọn) Gắn file testcase QC Excel
+## 4. (Tuỳ chọn) QC Excel — xem hệ thống đúng/sai theo 1 TC
+
+**Mục tiêu người mới:** import Excel → chọn 1 `TC_*` → biết Pass/Fail trên hệ thống.
+
+```text
+/quality-qc-import
+/quality-qc-implement TC_12.1
+```
+
+| Bước | Skill | Anh nhận được |
+|------|-------|----------------|
+| 1 | `/quality-qc-import` | Catalog (mô tả TC) — **chưa** kiểm tra hệ thống |
+| 2 | `/quality-qc-implement TC_xx.y` | Agent **viết test + chạy** → **Pass / Fail / Skip+blocker** |
+| 3 | `/quality-qc-run --id TC_xx.y` | Chỉ khi đã implement — chạy lại |
+
+Anh **không** cần tự mở file đổi `test.fixme`. Đó là việc của skill implement.
+
+Shell tương đương (nếu không dùng agent):
 
 ```bash
-# copy file QC chuẩn ISC vào clone
 cp ~/Downloads/ISC_*_TestCase.xlsx qc/input/
-
-# import → catalog
 npm run qc:import:py
-# hoặc: /quality-qc-import
-
-# sinh stub Level A (mặc định P1 / High)
-npm run qc:codegen -- --priority High
-# hoặc: /quality-qc-codegen
-
-# chạy 1 case đã có binding / đã implement
-npm run qc:run -- --id TC_01.1
-# hoặc: /quality-qc-run --id TC_01.1
+# rồi nhờ agent /quality-qc-implement — hoặc tự viết step trong e2e/specs/qc/…
+npm run qc:run -- --id TC_12.1
 ```
 
-Luồng ý nghĩa:
-
-```
-Excel QC → catalog.json → stubs test.fixme → (bỏ .fixme, viết step) → qc:run → results.xlsx
-```
+`/quality-qc-codegen` chỉ sinh khung backlog (`test.fixme` → skip). **Không** dùng codegen xong rồi “chạy TC” để kết luận hệ thống.
 
 Chi tiết: [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
@@ -215,9 +223,9 @@ Project-owned (domains, specs, `project.yml`, `qc/input`) được giữ; engine
 - [ ] Workspace có `*-web` (+ KB nếu có)  
 - [ ] Clone Base → `<project>-quality`  
 - [ ] `./scripts/init-quality.sh --name … --code … --wire-web-scripts`  
-- [ ] `npm run test:e2e:smoke` xanh  
-- [ ] Trong Cursor thấy `/quality`, `/quality-test`, …  
-- [ ] (Tuỳ chọn) Copy Excel → `qc:import:py` → `qc:codegen`  
+- [ ] `/quality-test` (smoke) xanh  
+- [ ] Trong Cursor thấy `/quality`, `/quality-qc-implement`, …  
+- [ ] (QC) Excel → `/quality-qc-import` → `/quality-qc-implement TC_*` → Pass/Fail  
 - [ ] (Tuỳ chọn) `add-domain` + viết spec  
 - [ ] Push clone lên remote đội  
 
@@ -233,6 +241,8 @@ Project-owned (domains, specs, `project.yml`, `qc/input`) được giữ; engine
 | `npm install` fail trong init | Sửa mạng/registry rồi `npm install && npx playwright install chromium` tay; hoặc init lại không dùng `--no-npm-install` sau khi mạng ổn |
 | Skill `/quality*` không hiện | `./scripts/wire-quality-skills.sh` hoặc `/quality-wire` |
 | `--id TC_03.1` chạy nhầm TC_03.10… | Đã fix ở engine ≥ 0.1.2; upgrade clone nếu bản cũ |
+| `qc:run` → **skipped** | Case còn `test.fixme` — dùng `/quality-qc-implement TC_*`, không kết luận hệ thống |
+| Pass nhưng không assert | Pass giả — skill implement cấm; phải có `expect` thật |
 
 ---
 

@@ -11,8 +11,7 @@
 
 ### Added
 
-- `init-quality.sh` chạy **`npm install` + `npx playwright install chromium` mặc định** sau wire skills; tắt bằng `--no-npm-install`.
-- [`GETTING-STARTED.md`](./GETTING-STARTED.md) — hướng dẫn chạy từ đầu (clone → init → smoke → QC).
+- (none yet)
 
 ### Changed
 
@@ -21,6 +20,24 @@
 ### Fixed
 
 - (none yet)
+
+---
+
+## [0.1.3] — 2026-08-12
+
+### Added
+
+- Skill **`/quality-qc-implement`** — luồng chính người mới: 1 `TC_*` → agent viết step/assert + chạy → **Pass/Fail hệ thống** (cấm pass giả body trống).
+- Docs/skills định hướng lại: import → implement → Pass/Fail; codegen chỉ còn backlog tuỳ chọn.
+
+### Changed
+
+- `GETTING-STARTED.md` §4, `docs/qc-excel-bridge.md`, README/COOKBOOK, router `/quality`, import/codegen/run skills: next-step mặc định là **implement**, không “codegen rồi qc-run stub”.
+- `wire-quality-skills.sh` blurb CLAUDE.md thêm `/quality-qc-implement`.
+
+### Fixed
+
+- (n/a — UX/docs; tránh hiểu nhầm skip/pass giả = nghiệm thu hệ thống)
 
 ---
 

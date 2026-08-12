@@ -10,11 +10,14 @@ Source of truth for Cursor/Claude skills. `init-quality.sh` / `wire-quality-skil
 | `quality-upgrade` | `/quality-upgrade` | Nâng cấp engine từ upstream |
 | `quality-test` | `/quality-test` | Chạy e2e: smoke / headed / observe / ui / real |
 | `quality-qc-import` | `/quality-qc-import` | Excel QC → catalog |
-| `quality-qc-codegen` | `/quality-qc-codegen` | Catalog → `test.fixme` stubs (Level A) |
-| `quality-qc-run` | `/quality-qc-run` | Chạy theo TC + `--headed`/`--observe`/`--ui` |
+| `quality-qc-implement` | `/quality-qc-implement` | **Newbie primary:** TC → viết test + chạy → Pass/Fail hệ thống |
+| `quality-qc-codegen` | `/quality-qc-codegen` | Catalog → stub `test.fixme` (backlog, optional) |
+| `quality-qc-run` | `/quality-qc-run` | Chạy lại TC đã implement (+ headed/observe/ui) |
 | `quality-add-domain` | `/quality-add-domain` | Scaffold domain harness |
 | `quality-status` | `/quality-status` | Xem config |
 | `quality-ai-review` | `/quality-ai-review` | Phase 2 placeholder |
+
+**QC path for first-time users:** `/quality-qc-import` → `/quality-qc-implement TC_*` (not codegen → run stub).
 
 Engine scripts (called by skills): `scripts/init-quality.sh`, `scripts/wire-quality-skills.sh`, `scripts/upgrade-quality.sh`, `scripts/verify-base-template.sh`, `scripts/e2e/qc-*.mjs`, `scripts/e2e/add-domain.sh`.
 

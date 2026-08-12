@@ -113,8 +113,9 @@ Keep project config, QC data, and generated specs in this \`<project>-quality\` 
 | \`/quality-wire\` | (Re)symlink skills vào workspace |
 | \`/quality-test\` | Chạy e2e / smoke |
 | \`/quality-qc-import\` | Import Excel QC → catalog |
-| \`/quality-qc-codegen\` | Sinh stub test.fixme từ catalog |
-| \`/quality-qc-run\` | Chạy theo TC id / priority |
+| \`/quality-qc-implement\` | **TC → viết test + chạy → Pass/Fail hệ thống** (luồng chính) |
+| \`/quality-qc-codegen\` | Sinh stub test.fixme (backlog, tuỳ chọn) |
+| \`/quality-qc-run\` | Chạy lại TC đã implement |
 | \`/quality-add-domain\` | Scaffold domain harness |
 | \`/quality-upgrade\` | Nâng cấp engine từ upstream |
 | \`/quality-status\` | Xem config web/port/KB |

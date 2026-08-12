@@ -1,97 +1,103 @@
 # QC Excel Bridge
 
-> **VI:** Cách gắn Playwright với file testcase QC chuẩn ISC.  
-> **EN:** How Playwright binds to the ISC QC testcase workbook.
+> **VI:** Cách gắn Playwright với file testcase QC chuẩn ISC — từ Excel đến Pass/Fail hệ thống.  
+> **EN:** How Playwright binds to ISC QC workbooks — from Excel to system Pass/Fail.
+
+## Mental model (đọc trước)
+
+Excel QC chỉ chứa **mô tả** (precondition / steps / expected bằng chữ).  
+Import + codegen **không** tự biết hệ thống đúng hay sai.
+
+| Bước | Skill | Kết quả |
+|------|-------|---------|
+| 1. Import | `/quality-qc-import` | `qc/catalog.json` — danh sách TC |
+| 2. (Tuỳ chọn) Codegen | `/quality-qc-codegen` | khung `test.fixme` — backlog, **skip** khi chạy |
+| 3. **Implement + chạy** | **`/quality-qc-implement TC_xx.y`** | Agent viết step/assert + chạy → **Pass/Fail hệ thống** |
+| 4. Chạy lại | `/quality-qc-run --id TC_xx.y` | Re-run case đã implement |
+| 5. Export | `npm run qc:export` | `qc/results.xlsx` (không đè file QC gốc) |
+
+**Người mới chỉ cần nhớ:** import xong → `/quality-qc-implement TC_…` → đọc Pass/Fail.
 
 ## What the Excel already gives us
-
-From an ISC-style `ISC_<PROJECT>_TestCase.xlsx` workbook:
 
 | Column | Role for automation |
 |--------|---------------------|
 | `Testcase ID` (e.g. `TC_03.1`) | Primary key ↔ Playwright annotation `qcId` |
 | `Req ID` | Traceability to BA requirements |
 | `Group` | Functional / UI / Integration / Database |
-| `Priority` | High (P1) / Medium / Low — filter smoke vs full |
+| `Priority` | High (P1) / Medium / Low — waves |
 | `Test Title` / `Pre-condition` / `Test Steps` / `Expected Result` | Spec authoring source |
 | `Automated` / `Script` / `KQ Script` / `Status` | Write-back targets after a run |
 
 Meta sheets skipped on import: Cover, Guideline, Revision History, Summary, Dashboard, Report Test, Bug Data, RTM.
 
-## Recommended workflow (Level A → B)
+## Recommended workflow
 
 ```mermaid
 flowchart LR
   QC[QC Excel] -->|qc:import| CAT[qc/catalog.json]
-  CAT -->|qc:codegen| STUB["stubs test.fixme + qcId"]
-  STUB -->|implement remove fixme| SPEC[Playwright specs]
+  CAT -->|qc-implement agent| SPEC[Playwright test + expect]
   SPEC -->|qc:run| PW[Playwright]
-  PW -->|qc-reporter| RES[qc/results.json]
+  PW -->|results| RES[Pass/Fail hệ thống]
   RES -->|qc:export| OUT[qc/results.xlsx]
-  OUT -->|QC reviews| QC
 ```
 
-1. **Import** — `npm run qc:import:py` (or `qc:import` if `xlsx` is installed):
+### Agent path (khuyến nghị)
+
+```text
+/quality-qc-import
+/quality-qc-implement TC_12.1
+```
+
+Agent có thể gọi codegen nội bộ khi cần stub; user **không** phải sửa `test.fixme` tay.
+
+### Shell path (advanced)
 
 ```bash
 npm run qc:import:py -- --file qc/input/ISC_*_TestCase.xlsx
+npm run qc:codegen -- --id TC_12.1          # optional stub only
+# … implement steps + expect in the spec …
+npm run qc:run -- --id TC_12.1
+npm run qc:export
 ```
 
-2. **Codegen stubs (Level A)** — default P1:
+## Pass / Fail / Skip nghĩa là gì
+
+| Playwright | Ý nghĩa với hệ thống |
+|------------|----------------------|
+| **passed** + có `expect` thật | Hệ thống khớp expected đã automate |
+| **failed** | Lệch expected / UI / giả định — cần xem lỗi |
+| **skipped** (`test.fixme`) | Chưa automate — **không** kết luận đúng/sai |
+| **passed** nhưng body trống (`void page`) | **Pass giả** — cấm; skill implement không được để vậy |
+
+## Codegen (Level A) — chỉ là backlog
 
 ```bash
 npm run qc:codegen -- --priority High
-# optional: --group Functional | --sheet "…" | --id TC_03.1 | --all | --dry-run
+# --group Functional | --sheet "…" | --id TC_01.1 | --all | --dry-run
 ```
 
-Writes `e2e/specs/qc/<sheet>.generated.spec.ts` (`test.fixme` + `qcId` + Pre/Steps/Expected comments).  
+Writes `e2e/specs/qc/<sheet>.generated.spec.ts` (`test.fixme` + `qcId` + comments).  
 Skips TC ids already implemented as real `test(...)`.
 
-3. **Implement (Level B)** — remove `.fixme`, write real steps (wave by P1 Functional first).
-
-4. **Run filtered**
-
-```bash
-npm run qc:run -- --id TC_03.1
-npm run qc:run -- --priority High --group Functional
-npm run qc:run -- --priority High --headed
-```
-
-5. **Export** — `npm run qc:export` → `qc/results.xlsx` (never overwrites the QC source).
-
-Agent skills: `/quality-qc-import` → `/quality-qc-codegen` → `/quality-qc-run`.
+Không claim “đã automate” chỉ vì có stub.
 
 ## What to automate first
 
 | Priority | Suggestion |
 |----------|------------|
-| P1 Functional | Happy paths + hard validations (blockers) |
+| P1 Functional | Happy paths + hard validations |
 | P1 UI | Only if selector-stable (prefer role/label) |
-| Integration needing external systems | `*.real.spec.ts` + auth.real adapter |
+| Integration / email / external | Cần data hoặc `*.real` — implement skill phải hỏi / skip nếu thiếu |
 | Pure visual / copy | Keep manual in Excel |
 
-`qc:codegen` only creates **stubs** (`test.fixme`). Humans/agents implement runnable steps; the bridge keeps IDs and results aligned with QC.
-
-## Coverage report
-
-After codegen:
+## Coverage
 
 ```bash
 cat qc/coverage.json
 ```
 
-After a filtered run:
+## Phase 2
 
-```bash
-node -e "
-const c=require('./qc/catalog.json');
-const r=require('./qc/results.json');
-const done=new Set((r.rows||[]).map(x=>x.qcId));
-console.log('catalog', c.count, 'automated-ran', done.size);
-"
-```
-
-## Phase 2 ideas
-
-- Map `Req ID` ↔ KB `09-requirements/REQ-*`  
-- AI-assisted step → Playwright draft (fits future `ai-review/` module)
+- Map `Req ID` ↔ KB `09-requirements/REQ-*`
+- Batch implement waves với report bảng Pass/Fail

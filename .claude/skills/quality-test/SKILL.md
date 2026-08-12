@@ -19,13 +19,22 @@ Agent **phải tự chạy** lệnh phù hợp — không chỉ bảo user gõ `
 2. If no `node_modules` → offer `npm install && npx playwright install chromium`.
 3. Always `cd "$KIT_ROOT"` before run.
 
-## Subcommands / chế độ hiển thị
+## Default (quan trọng)
 
-Khi user không nói rõ mode → **hỏi** (headless / headed / observe / ui), mặc định gợi ý **smoke headless** nếu họ chỉ muốn “chạy thử”.
+| User input | Agent làm gì |
+|------------|--------------|
+| Bare `/quality-test` hoặc `/quality test` (không kèm mode) | **Chạy smoke ngay** — `npm run test:e2e:smoke`. **Không hỏi** AskQuestion / menu mode. |
+| `/quality smoke`, “chạy thử”, “smoke” | Smoke ngay |
+| Có mode rõ (`headed` / `observe` / `ui` / `all` / …) | Chạy đúng mode đó, không hỏi |
+| Mơ hồ kiểu “chạy e2e” / “chạy test” **không** phải slash-command `/quality-test` | Hỏi mode; **default suggestion = Smoke (headless)** |
+
+> Lý do: GETTING-STARTED và post-init verify kỳ vọng `/quality-test` = smoke nhanh, không popup chọn mode.
+
+## Subcommands / chế độ hiển thị
 
 | User nói | Subcommand | Browser hiện? | Command agent chạy |
 |----------|------------|---------------|-------------------|
-| smoke / chạy thử (mặc định) | `smoke` | Không | `npm run test:e2e:smoke` |
+| *(bare `/quality-test`)* / smoke / chạy thử | `smoke` | Không | `npm run test:e2e:smoke` |
 | all / full mock | `all` | Không | `npm run test:e2e` |
 | headed / mở trình duyệt / có cửa sổ | `headed` | **Có** | `npm run test:e2e:headed` |
 | observe / chậm / full-screen / xem từng bước | `observe` | **Có** (maximized + slowMo) | `PW_OBSERVE=1 PW_SLOWMO=400 npm run test:e2e:headed` |
@@ -49,7 +58,7 @@ Ví dụ: “observe file X” →
 
 ## Procedure
 
-1. Parse intent → chọn hàng trong bảng trên (hỏi nếu mơ hồ).
+1. Parse intent theo bảng Default + Subcommands (**bare `/quality-test` → smoke, không AskQuestion**).
 2. Chạy command (block đến khi xong; UI mode có thể chạy lâu — nói rõ cho user).
 3. Tóm tắt pass/fail; fail → trỏ `test-results/` / `playwright-report/` + lỗi đầu tiên.
 4. Không tự “fix” bug app trừ khi user yêu cầu.

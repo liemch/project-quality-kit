@@ -1,8 +1,11 @@
 # Engine version pin — bump when publishing an upgradeable release of this kit.
-engine_version: "0.1.2"
+engine_version: "0.1.3"
 # Set by init-quality.sh in a <project>-quality clone; keep null on Base.
 initialized_at: null
 history:
+  - version: "0.1.3"
+    date: "2026-08-12"
+    notes: "Newbie QC path: /quality-qc-implement (import → implement TC → Pass/Fail); docs/skills reoriented; codegen demoted to optional backlog."
   - version: "0.1.2"
     date: "2026-08-12"
     notes: "Base hygiene: smoke config fallback, refuse-base guards, verify-base-template, webServer gracefulShutdown, qc id/coverage/export fixes."

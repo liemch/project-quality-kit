@@ -2,7 +2,7 @@
 
 > **Quality Kit engine** — scaffold sibling dùng chung (project-agnostic) mang Playwright E2E harness, cầu nối testcase QC Excel (ISC), và chỗ trống cho AI-review / CI. Clone thành `<project>-quality`, init cá nhân hóa, rồi chạy test cạnh `api` / `web` / `knowledge-base`.
 >
-> **Trạng thái:** đây là bản **Base template** — không chứa config hay data của một dự án cụ thể. Engine hiện tại: **v0.1.2** (`_meta/versions/engine-version.yml`).
+> **Trạng thái:** đây là bản **Base template** — không chứa config hay data của một dự án cụ thể. Engine hiện tại: **v0.1.3** (`_meta/versions/engine-version.yml`).
 
 > **Hai cửa vào:**
 > - 👤 **Người:** file này — giới thiệu, cấu trúc, cách dùng. **Chạy từ đầu?** → [`GETTING-STARTED.md`](./GETTING-STARTED.md).
@@ -36,19 +36,20 @@
 
 ## 1. Giới thiệu
 
-**Kit này là gì:** sibling repo chạy **Playwright** cho một dự án — mock session, domain harness, smoke, và luồng QC Excel (import → stub codegen → run theo `TC_*` → export kết quả). Không nhúng e2e vào git của web; giống mô hình Knowledge Base: **clone → init → chạy**.
+**Kit này là gì:** sibling repo chạy **Playwright** cho một dự án — mock session, domain harness, smoke, và luồng QC Excel (**import → implement TC → Pass/Fail hệ thống** → export). Không nhúng e2e vào git của web; giống mô hình Knowledge Base: **clone → init → chạy**.
 
 **Vì sao tồn tại:**
 
 - Một engine e2e/QC tái sử dụng cho nhiều dự án, không copy-paste harness.
-- Agent gọi `/quality*` thay vì nhớ từng script shell.
-- Catalog Excel QC và stub `test.fixme` tạo backlog automation có ID khớp QC.
+- Agent skills `/quality*` để onboard và vận hành, không bắt user nhớ script.
+- **Người mới:** import Excel rồi `/quality-qc-implement TC_*` — agent viết + chạy; không tự sửa `test.fixme`.
+- Codegen stub chỉ là backlog tùy chọn; Pass/Fail thật đến từ implement + assert.
 
 **Điểm khác biệt:**
 
 - **Base vs clone** — Base chỉ giữ engine; mọi config/data dự án nằm ở `<project>-quality`.
 - **KB-aware init** — đọc sibling knowledge-base để lấy port / base path / service id (optional).
-- **QC Level A → B** — codegen stub trước, implement dần theo priority (P1 trước).
+- **QC implement-first** — người mới: import → implement TC → Pass/Fail; codegen stub là backlog phụ.
 
 ---
 
@@ -106,10 +107,10 @@ cd my-project-quality
 # 4. Smoke
 npm run test:e2e:smoke
 
-# 5. (Tuỳ chọn) QC Excel
+# 5. (Tuỳ chọn) QC Excel — Pass/Fail hệ thống
 cp ~/Downloads/ISC_*_TestCase.xlsx qc/input/
 npm run qc:import:py
-npm run qc:codegen -- --priority High
+# rồi trong Cursor: /quality-qc-implement TC_xx.y
 ```
 
 Hoặc trong Cursor/Claude: **`/quality-init`** → hỏi input → dry-run → init → wire skills → npm install → verify.
@@ -124,7 +125,7 @@ Hoặc trong Cursor/Claude: **`/quality-init`** → hỏi input → dry-run → 
 | `npm install` + chromium (mặc định ON trong init) | ✓ | ✓ |
 | `--wire-web-scripts` | nên bật | nên bật |
 | `/quality-test` smoke | ✓ | ✓ |
-| QC import / codegen | khi có Excel | khi có Excel |
+| (QC) `/quality-qc-import` → `/quality-qc-implement TC_*` | tuỳ | tuỳ |
 
 ---
 
@@ -215,8 +216,9 @@ Nguồn: `.claude/skills/` → wire ra `<workspace>/.claude/skills/` (init mặc
 | `/quality-wire` | (Re)symlink skills |
 | `/quality-test` | e2e: smoke / headed / observe / ui / real |
 | `/quality-qc-import` | Excel → `qc/catalog.json` |
-| `/quality-qc-codegen` | Catalog → stub `test.fixme` (mặc định P1) |
-| `/quality-qc-run` | Chạy theo TC / priority (+ headed/observe/ui) |
+| `/quality-qc-implement` | **TC → viết test + chạy → Pass/Fail hệ thống** (luồng chính) |
+| `/quality-qc-codegen` | Catalog → stub `test.fixme` (backlog, tuỳ chọn) |
+| `/quality-qc-run` | Chạy lại TC đã implement (+ headed/observe/ui) |
 | `/quality-add-domain` | Scaffold domain harness |
 | `/quality-upgrade` | Nâng engine từ upstream |
 | `/quality-status` | Xem config web/port/KB |
@@ -256,15 +258,21 @@ Biến hữu ích: `PLAYWRIGHT_MODE`, `PW_OBSERVE=1`, `PW_SLOWMO=400`, `PW_LOCAL
 
 ## 7. QC Excel bridge
 
-Luồng khuyến nghị (**Level A → B**):
+Luồng **người mới** (khuyến nghị):
+
+```text
+/quality-qc-import
+/quality-qc-implement TC_12.1    ← agent viết + chạy → Pass/Fail hệ thống
+```
+
+Shell / advanced:
 
 ```bash
 cp /path/to/ISC_*_TestCase.xlsx qc/input/
-npm run qc:import:py                       # → qc/catalog.json
-npm run qc:codegen -- --priority High      # → e2e/specs/qc/*.generated.spec.ts
-# implement: test.fixme → test
-npm run qc:run -- --id TC_01.1
-npm run qc:export                          # → qc/results.xlsx (không đè file gốc)
+npm run qc:import:py
+# implement via agent (preferred) or hand-write steps + expect
+npm run qc:run -- --id TC_12.1
+npm run qc:export
 ```
 
 Gắn spec với Testcase ID:
@@ -272,11 +280,12 @@ Gắn spec với Testcase ID:
 ```ts
 test("TC_01.1 Create resource successfully", async ({ page }) => {
   test.info().annotations.push({ type: "qcId", description: "TC_01.1" });
-  // steps…
+  // steps + expect — bắt buộc có assert thật
 });
 ```
 
-> `qc:codegen` chỉ sinh **stub backlog** — chưa phải automation chạy xanh.
+> Import/codegen **không** kết luận hệ thống đúng/sai. Chỉ `/quality-qc-implement` (hoặc test đã viết tay) mới có Pass/Fail ý nghĩa.
+> Chi tiết: [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
 Chi tiết: [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 

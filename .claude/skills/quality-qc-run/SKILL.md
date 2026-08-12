@@ -5,12 +5,16 @@ description: >
   optional visible browser (headed / observe / UI), then optionally export
   results to Excel. Use when the user says "/quality-qc-run", "/quality qc-run",
   "chạy TC_03.1", "chạy P1 QC", "chạy TC headed", "observe testcase",
-  "export kết quả QC", or "qc:export".
+  "export kết quả QC", or "qc:export". If the TC is still a stub / not
+  implemented, prefer /quality-qc-implement instead of only reporting skip.
 ---
 
 # /quality-qc-run — Run + export by QC id (kèm chế độ browser)
 
 Agent **phải tự chạy** lệnh — không chỉ đưa lệnh cho user.
+
+**Phạm vi:** chạy lại case **đã** có `test(...)` + assert.  
+Case còn `test.fixme` / chưa implement → kết quả **skipped** ≠ hệ thống đúng. Khi đó chuyển **`/quality-qc-implement TC_*`**.
 
 ## Prerequisites
 
@@ -32,27 +36,29 @@ Agent **phải tự chạy** lệnh — không chỉ đưa lệnh cho user.
 
 ## Procedure
 
-1. Resolve `KIT_ROOT`; parse filter + display mode (hỏi nếu user muốn “xem” mà chưa nói headed/observe/ui).
-2. Chạy:
+1. Resolve `KIT_ROOT`; parse filter + display mode.
+2. Nếu user muốn “xem hệ thống đúng sai” mà TC còn stub → **`/quality-qc-implement`**, không chỉ run.
+3. Chạy:
 
 ```bash
 cd "$KIT_ROOT"
 npm run qc:run -- --id TC_03.1
 npm run qc:run -- --id TC_03.1 --headed
-npm run qc:run -- --priority High --observe
-npm run qc:run -- --id TC_03.1 --ui
 ```
 
-3. Export nếu user muốn ghi Excel:
+4. Export nếu user muốn:
 
 ```bash
 npm run qc:export
 # → qc/results.xlsx (không đè file QC gốc)
 ```
 
-4. Tóm tắt QC ids pass/fail.
+5. Tóm tắt QC ids: **passed / failed / skipped**.  
+   - skipped → nhắc implement  
+   - passed → chỉ tin nếu spec có `expect` thật (không body trống)
 
 ## See also
 
+- Implement + chạy lần đầu: `/quality-qc-implement`
 - Suite không theo QC → `/quality-test`
 - `docs/qc-excel-bridge.md`

@@ -6,7 +6,7 @@ description: >
   "chạy quality", "cài bộ e2e", "import testcase QC", or asks how to onboard a
   project that does not have *-quality yet. Prefer this over telling the user to
   run scripts/*.sh manually. Subcommands: init | wire | upgrade | test | smoke |
-  headed | observe | ui | qc-import | qc-codegen | qc-run | add-domain | status | ai-review.
+  headed | observe | ui | qc-import | qc-codegen | qc-implement | qc-run | add-domain | status | ai-review.
 ---
 
 # /quality — Project Quality Kit router
@@ -38,11 +38,14 @@ If still missing → **first-time onboard**: follow **init**. Do not invent a ki
 | observe / chậm / full-screen | `observe` | [`quality-test`](../quality-test/SKILL.md) → mode `observe` |
 | UI Mode / time-travel debug | `ui` | [`quality-test`](../quality-test/SKILL.md) → mode `ui` |
 | import Excel QC | `qc-import` | [`quality-qc-import`](../quality-qc-import/SKILL.md) |
+| implement TC / chạy TC xem hệ thống đúng sai / automate TC | `qc-implement` | [`quality-qc-implement`](../quality-qc-implement/SKILL.md) |
 | sinh stub từ catalog / codegen | `qc-codegen` | [`quality-qc-codegen`](../quality-qc-codegen/SKILL.md) |
-| chạy theo TC / P1 / TC headed|observe | `qc-run` | [`quality-qc-run`](../quality-qc-run/SKILL.md) |
+| chạy lại theo TC / P1 (đã implement) | `qc-run` | [`quality-qc-run`](../quality-qc-run/SKILL.md) |
 | thêm domain CRUD | `add-domain` | [`quality-add-domain`](../quality-add-domain/SKILL.md) |
 | status / config | `status` | [`quality-status`](../quality-status/SKILL.md) |
 | AI review CI | `ai-review` | [`quality-ai-review`](../quality-ai-review/SKILL.md) (phase 2) |
+
+**QC newbie default:** sau import → **`qc-implement`**, không `qc-run` trên stub.
 
 If the user only says `/quality` → show this menu (VI+EN) and ask which subcommand.
 
@@ -57,4 +60,4 @@ If the user only says `/quality` → show this menu (VI+EN) and ask which subcom
 
 ## Related
 
-- Human docs: `README.md` §2 + § Skills, `COOKBOOK.md`, `docs/qc-excel-bridge.md`
+- Human docs: `GETTING-STARTED.md`, `README.md`, `COOKBOOK.md`, `docs/qc-excel-bridge.md`
