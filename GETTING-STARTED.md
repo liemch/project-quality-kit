@@ -148,7 +148,7 @@ npm run test:e2e:smoke
 Anh **không** cần tự sửa `test.fixme`. `qc:run` cảnh báo **empty-pass** (test không có `expect`).
 
 Fail: xem `test-results/latest/` (screenshot / video / trace — `retain-on-failure`).
-Mỗi lần chạy ghi vào `test-results/run-<timestamp>/` nên **không xoá artifact của wave trước**; giữ 10 run gần nhất (`PW_KEEP_RUNS`).
+Mỗi lần chạy ghi vào `test-results/run-<timestamp>/` nên **không xoá artifact của wave trước**; giữ 10 run gần nhất (`PW_KEEP_RUNS=0` = giữ hết).
 
 Chi tiết: [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 
