@@ -11,11 +11,19 @@ type QcRow = {
   durationMs: number;
   error?: string;
   attachments?: string[];
+  updatedAt?: string;
 };
 
 /**
- * Collects Playwright results keyed by qcId annotation for Excel export.
- * Skips writing inside Base template (project-quality-kit) so smoke does not leak results.json.
+ * Collects Playwright results keyed by qcId for Excel export / coverage.
+ *
+ * Merge policy (default):
+ *   - Load existing qc/results.json
+ *   - Upsert rows from this run by qcId (latest wins for that id)
+ *   - Keep other qcIds untouched (smoke / partial run must NOT wipe a sheet wave)
+ *
+ * Replace-all: QC_RESULTS_REPLACE=1
+ * Base template: skip write (no leak).
  */
 class QcReporter implements Reporter {
   private rows: QcRow[] = [];
@@ -43,6 +51,7 @@ class QcReporter implements Reporter {
       durationMs: result.duration,
       error: result.error?.message,
       attachments: attachments.length ? attachments : undefined,
+      updatedAt: new Date().toISOString(),
     });
   }
 
@@ -56,11 +65,37 @@ class QcReporter implements Reporter {
     const cfg = loadProjectConfig(kitRoot);
     const out = path.resolve(kitRoot, cfg.qc.results_out || "qc/results.json");
     fs.mkdirSync(path.dirname(out), { recursive: true });
-    fs.writeFileSync(
-      out,
-      JSON.stringify({ generatedAt: new Date().toISOString(), count: this.rows.length, rows: this.rows }, null, 2),
+
+    const replaceAll = process.env.QC_RESULTS_REPLACE === "1" || process.env.QC_RESULTS_REPLACE === "true";
+    const byId = new Map<string, QcRow>();
+
+    if (!replaceAll && fs.existsSync(out)) {
+      try {
+        const prev = JSON.parse(fs.readFileSync(out, "utf8")) as { rows?: QcRow[] };
+        for (const row of prev.rows || []) {
+          if (row?.qcId) byId.set(row.qcId, row);
+        }
+      } catch (e) {
+        console.warn("[qc-reporter] could not read previous results — writing this run only:", (e as Error).message);
+      }
+    }
+
+    for (const row of this.rows) {
+      byId.set(row.qcId, row);
+    }
+
+    const merged = [...byId.values()].sort((a, b) => a.qcId.localeCompare(b.qcId, undefined, { numeric: true }));
+    const payload = {
+      generatedAt: new Date().toISOString(),
+      count: merged.length,
+      merge: !replaceAll,
+      lastRunCount: this.rows.length,
+      rows: merged,
+    };
+    fs.writeFileSync(out, JSON.stringify(payload, null, 2));
+    console.log(
+      `[qc-reporter] ${replaceAll ? "replaced" : "merged"} ${this.rows.length} run row(s) → ${merged.length} total @ ${out}`,
     );
-    console.log(`[qc-reporter] wrote ${this.rows.length} row(s) → ${out}`);
   }
 }
 

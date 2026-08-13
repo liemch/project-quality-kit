@@ -1,6 +1,6 @@
 {
   "name": "project-quality-kit",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "description": "Sibling quality kit: Playwright e2e harness, QC Excel bridge, future AI-review CI modules",
   "scripts": {

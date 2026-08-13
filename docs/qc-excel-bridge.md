@@ -36,7 +36,7 @@ Agent dùng `npm run qc:list -- --sheet Template --priority High --status stub -
 
 | Path | Nội dung |
 |------|----------|
-| `qc/results.json` | Theo `qcId` (+ attachments khi fail) |
+| `qc/results.json` | Theo `qcId` (+ attachments khi fail). **Merge** theo `qcId` mỗi lần chạy (smoke/partial không xoá TC khác). `QC_RESULTS_REPLACE=1` = ghi đè toàn bộ. |
 | `qc/results.xlsx` | Write-back KQ Script/Status + sheet **QC Run Summary** |
 | `qc/coverage.html` | Dashboard catalog / stub / impl / last run |
 | `playwright-report/` | HTML Playwright |

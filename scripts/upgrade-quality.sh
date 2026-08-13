@@ -7,13 +7,15 @@
 #   ./scripts/upgrade-quality.sh --from /path/to/project-quality-kit
 #   ./scripts/upgrade-quality.sh --from git@…:project-quality-kit.git --ref main
 #
-# Preserved (never overwritten):
+# Preserved (never overwritten / never deleted by upgrade):
 #   _meta/project.yml
-#   e2e/fixtures/domains/**          (except domains/_upstream-example if present)
+#   e2e/fixtures/domains/**          (except example-crud.ts which is refreshed)
 #   e2e/specs/**                     (except e2e/specs/smoke/** which is refreshed)
 #   e2e/pages/**
 #   e2e/config/**
-#   qc/catalog.json, qc/coverage.json, qc/input/**
+#   qc/catalog.json, qc/coverage.json, qc/coverage.html, qc/input/**
+#   qc/results.json, qc/results.xlsx   ← clone test history (MUST keep)
+#   test-results/, playwright-report/  ← local run artifacts (MUST keep)
 #
 # Refreshed from upstream:
 #   e2e/fixtures/{core,crud-resource,harness,load-config}.ts
@@ -164,5 +166,24 @@ if [[ "$DRY_RUN" -eq 0 ]]; then
   "$REPO_ROOT/scripts/wire-quality-skills.sh" --kit "$REPO_ROOT" || warn "wire-skills failed — run /quality-wire manually"
 fi
 
-log "Done. Review diff, then: npm install && npm run test:e2e:smoke"
-log "Preserved: _meta/project.yml, e2e/fixtures/domains, project specs/pages, qc/input"
+# Explicitly assert clone run artifacts were not touched
+preserve_check() {
+  local f="$1"
+  if [[ -e "$REPO_ROOT/$f" ]]; then
+    log "preserved (untouched): $f"
+  fi
+}
+if [[ "$DRY_RUN" -eq 0 ]]; then
+  preserve_check "qc/results.json"
+  preserve_check "qc/results.xlsx"
+  preserve_check "qc/coverage.json"
+  preserve_check "qc/coverage.html"
+  preserve_check "qc/catalog.json"
+  preserve_check "test-results"
+  preserve_check "playwright-report"
+fi
+
+log "Done. Engine refreshed; clone QC results / test-results were NOT deleted."
+log "Optional: npm install && npm run test:e2e:smoke"
+log "Note: smoke/qc:run merges into qc/results.json by qcId (does not wipe other TCs)."
+log "Preserved: project.yml, domains, specs, qc/input, qc/results*, test-results/, playwright-report/"

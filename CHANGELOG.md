@@ -23,6 +23,23 @@
 
 ---
 
+## [0.1.6] — 2026-08-13
+
+### Added
+
+- (n/a)
+
+### Changed
+
+- **`qc-reporter` merges `qc/results.json` by `qcId`** — partial runs / smoke after upgrade no longer wipe sheet history. Force replace: `QC_RESULTS_REPLACE=1`.
+- **`upgrade-quality.sh`**: explicitly never touches `qc/results*`, `test-results/`, `playwright-report/`; logs preserved artifacts after upgrade.
+
+### Fixed
+
+- Clone mất Pass/Fail sau `/quality-upgrade` + smoke — do reporter ghi đè; đã merge.
+
+---
+
 ## [0.1.5] — 2026-08-12
 
 ### Added

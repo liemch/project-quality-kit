@@ -83,6 +83,8 @@ See [ci/README.md](./ci/README.md) — GitLab `quality:e2e:smoke`, GitHub `quali
 ./scripts/upgrade-quality.sh --from https://github.com/liemch/project-quality-kit.git --ref main
 ```
 
+Giữ nguyên kết quả clone: `qc/results*`, `test-results/`. Reporter merge theo `qcId` khi chạy lại smoke.
+
 ## 10. Wire web scripts
 
 `init --wire-web-scripts` adds `test:e2e*` / `qc:*` into the FE `package.json` (prefix into quality sibling).

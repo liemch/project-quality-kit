@@ -196,8 +196,10 @@ Playwright tự `npm run dev` FE khi có `web_dir`.
 ./scripts/upgrade-quality.sh --from https://github.com/liemch/project-quality-kit.git --ref main
 ```
 
-Giữ: `project.yml`, domains, specs QC, `qc/input`, `ai-review/project/`.  
+Giữ: `project.yml`, domains, specs QC, `qc/input`, `ai-review/project/`, **`qc/results*`**, **`test-results/`**, **`playwright-report/`**.  
 Làm mới: scripts, skills, fixtures core/ui/factories, smoke, docs, CI snippets, `auth.setup.ts`.
+
+Smoke / `qc:run` một phần **merge** `qc/results.json` theo `qcId` (không xoá Pass/Fail TC khác). Ghi đè toàn bộ: `QC_RESULTS_REPLACE=1`.
 
 ---
 

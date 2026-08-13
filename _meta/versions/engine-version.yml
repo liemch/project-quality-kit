@@ -1,8 +1,11 @@
 # Engine version pin — bump when publishing an upgradeable release of this kit.
-engine_version: "0.1.5"
+engine_version: "0.1.6"
 # Set by init-quality.sh in a <project>-quality clone; keep null on Base.
 initialized_at: null
 history:
+  - version: "0.1.6"
+    date: "2026-08-13"
+    notes: "Merge qc/results.json by qcId; upgrade never deletes clone test results / test-results."
   - version: "0.1.5"
     date: "2026-08-12"
     notes: "CI smoke, AntD helpers, auth-real, webServer DX, init --git-remote; fix double-project run, Base results leak, auth cookies, qc:run filter safety."

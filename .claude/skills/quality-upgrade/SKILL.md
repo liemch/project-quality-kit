@@ -34,4 +34,11 @@ cd "$KIT_ROOT"
 
 ## Preserved vs refreshed
 
-See `scripts/upgrade-quality.sh` header. Never overwrite `_meta/project.yml`, project domains/specs, or `qc/input/**`.
+See `scripts/upgrade-quality.sh` header.
+
+**Never delete / overwrite (clone history):**
+- `_meta/project.yml`, project domains/specs, `qc/input/**`, `qc/catalog.json`
+- `qc/results.json`, `qc/results.xlsx`, `qc/coverage.*`
+- `test-results/`, `playwright-report/`
+
+After upgrade, smoke/`qc:run` **merges** into `qc/results.json` by `qcId` — does not wipe other TCs. Full replace only with `QC_RESULTS_REPLACE=1`.
