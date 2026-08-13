@@ -83,7 +83,7 @@ See [ci/README.md](./ci/README.md) — GitLab `quality:e2e:smoke`, GitHub `quali
 ./scripts/upgrade-quality.sh --from https://github.com/liemch/project-quality-kit.git --ref main
 ```
 
-Giữ nguyên kết quả clone: `qc/results*`, `test-results/`. Reporter merge theo `qcId` khi chạy lại smoke.
+Giữ nguyên kết quả clone: `qc/results*`, `test-results/`. Reporter merge theo `qcId` khi chạy lại smoke; artifact mỗi run nằm ở `test-results/run-<timestamp>/` (không đè run trước).
 
 ## 10. Wire web scripts
 

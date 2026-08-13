@@ -45,7 +45,8 @@ npm run qc:export -- --sheet Template
 npm run qc:coverage -- --open
 ```
 
-Fail → trỏ `test-results/` attachments trong `qc/results.json`.
+Fail → trỏ attachments trong `qc/results.json` (nằm ở `test-results/run-<timestamp>/`, shortcut `test-results/latest/`).
+`attachmentsMissing: true` = artifact của run cũ đã bị prune (`PW_KEEP_RUNS`), chạy lại TC đó để có artifact mới.
 
 ## See also
 

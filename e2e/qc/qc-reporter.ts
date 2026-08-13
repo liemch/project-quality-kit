@@ -11,6 +11,7 @@ type QcRow = {
   durationMs: number;
   error?: string;
   attachments?: string[];
+  attachmentsMissing?: boolean;
   updatedAt?: string;
 };
 
@@ -73,7 +74,12 @@ class QcReporter implements Reporter {
       try {
         const prev = JSON.parse(fs.readFileSync(out, "utf8")) as { rows?: QcRow[] };
         for (const row of prev.rows || []) {
-          if (row?.qcId) byId.set(row.qcId, row);
+          if (!row?.qcId) continue;
+          const gone = (row.attachments || []).some((a) => {
+            const p = a.slice(a.indexOf(":") + 1);
+            return p && !fs.existsSync(p);
+          });
+          byId.set(row.qcId, gone ? { ...row, attachmentsMissing: true } : row);
         }
       } catch (e) {
         console.warn("[qc-reporter] could not read previous results — writing this run only:", (e as Error).message);

@@ -23,6 +23,20 @@
 
 ---
 
+## [0.1.7] — 2026-08-13
+
+### Changed
+
+- **Artifacts theo từng run:** `outputDir = test-results/run-<timestamp>` + symlink `test-results/latest`, prune giữ `PW_KEEP_RUNS` (default 10) run gần nhất. Playwright xoá `outputDir` ở **đầu** mỗi run, nên `test-results/` dùng chung khiến screenshot/video/trace của wave trước bị mất — nay không còn.
+- `preserveOutput: "failures-only"` để không phình dung lượng.
+- `qc-reporter` đánh dấu `attachmentsMissing: true` cho row cũ mà file artifact đã bị prune.
+
+### Fixed
+
+- Chạy smoke sau upgrade làm mất toàn bộ `test-results/` của wave QC trước.
+
+---
+
 ## [0.1.6] — 2026-08-13
 
 ### Added

@@ -28,7 +28,7 @@ Agent dùng `npm run qc:list -- --sheet Template --priority High --status stub -
 | Playwright | Ý nghĩa |
 |------------|---------|
 | passed + `expect` | Hệ thống khớp expected đã automate |
-| failed | Lệch — xem `test-results/` (screenshot/video/trace) |
+| failed | Lệch — xem `test-results/latest/` (screenshot/video/trace) |
 | skipped (`fixme`) | Chưa automate |
 | implemented không `expect` | **Empty-pass** — `qc:run` WARN; `QC_STRICT_EMPTY=1` từ chối chạy |
 
@@ -40,7 +40,8 @@ Agent dùng `npm run qc:list -- --sheet Template --priority High --status stub -
 | `qc/results.xlsx` | Write-back KQ Script/Status + sheet **QC Run Summary** |
 | `qc/coverage.html` | Dashboard catalog / stub / impl / last run |
 | `playwright-report/` | HTML Playwright |
-| `test-results/` | Screenshot / video / trace khi fail |
+| `test-results/run-<timestamp>/` | Screenshot / video / trace khi fail — **mỗi lần chạy 1 thư mục riêng**, giữ `PW_KEEP_RUNS` (mặc định 10) run gần nhất |
+| `test-results/latest` | Symlink tới run mới nhất |
 
 ## Seed helpers
 

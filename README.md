@@ -152,7 +152,7 @@ ai-review/  scaffold (phase 2)
 npm run qc:export -- --sheet X
 ```
 
-Pass cần `expect` thật; empty-pass bị `qc:run` cảnh báo. Fail → `test-results/`.  
+Pass cần `expect` thật; empty-pass bị `qc:run` cảnh báo. Fail → `test-results/latest/`.  
 Chi tiết: [`docs/qc-excel-bridge.md`](./docs/qc-excel-bridge.md).
 
 ---
