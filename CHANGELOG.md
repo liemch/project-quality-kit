@@ -23,6 +23,32 @@
 
 ---
 
+## [0.2.0] — 2026-08-14
+
+### Added
+
+- **QC Wave A — Playwright QC DX**
+  - **AntD helpers:** `formItem` / `formInput` / `fillFormField` / `selectFormOption` / `drawer` / `uploadFiles` / `expectMessageSuccess|Error`.
+  - **Coverage v2:** filter UI (search/sheet/prio/status/last/empty), empty-pass badge, artifact links, orphan specs from disk.
+  - **`qc:run --status`** `stub|implemented|missing|failed|passed|skipped|empty` + **`--dry-run`** (list only).
+  - **`qc:list --status`** extended with `failed|passed|skipped|empty`.
+  - **Golden specs:** `e2e/specs/golden/qc-golden.spec.ts` (`TC_GOLDEN.1–3`) + `docs/qc-golden.md` + `npm run test:e2e:golden`.
+  - **Wave report:** `npm run qc:wave-report` + `docs/qc-implement-report.md` for batch Pass/Fail/Skip tables.
+- `upgrade-quality.sh` refreshes `e2e/specs/golden`.
+- `qc:run` uses shared `load-project-cfg` (Base falls back to `project.smoke.yml`).
+
+### Changed
+
+- `scan-qc-specs` accepts alphanumeric qcIds (`TC_GOLDEN.1`, not only `TC_12.1`).
+- Skills `/quality-qc-implement|run|coverage` + COOKBOOK / README / `docs/qc-excel-bridge.md` for Wave A commands.
+- Engine version **0.2.0**.
+
+### Fixed
+
+- (n/a — feature release)
+
+---
+
 ## [0.1.7] — 2026-08-13
 
 ### Changed

@@ -18,9 +18,11 @@ Agent **phải tự chạy** lệnh.
 ## Filters
 
 `--id TC_03.1` | `--sheet Template` | `--priority High` | `--group Functional` | `--grep …`  
+`--status stub|implemented|missing|failed|passed|skipped|empty`  
+`--dry-run` — list matched ids, **không** chạy Playwright  
 `--project mock` (default) · `--slowmo N` · passthrough args after flags
 
-Catalog filters require `qc/catalog.json`; empty match → exit 1 (không chạy full suite).
+Catalog filters require `qc/catalog.json` (trừ `--status failed|passed|…` có thể dùng results/scan). Empty match → exit 1.
 
 ## Display
 
@@ -41,6 +43,9 @@ Implemented specs without `expect` → WARN. Refuse with `--strict-empty` or `QC
 cd "$KIT_ROOT"
 npm run qc:run -- --id TC_03.1
 npm run qc:run -- --sheet Template --priority High --headed
+npm run qc:run -- --status failed              # re-run last Fail
+npm run qc:run -- --status stub --dry-run      # list only
+npm run qc:wave-report -- --sheet Template
 npm run qc:export -- --sheet Template
 npm run qc:coverage -- --open
 ```
@@ -50,4 +55,4 @@ Fail → trỏ attachments trong `qc/results.json` (nằm ở `test-results/run-
 
 ## See also
 
-- `/quality-qc-implement` · `/quality-qc-coverage` · `docs/qc-excel-bridge.md`
+- `/quality-qc-implement` · `/quality-qc-coverage` · `docs/qc-excel-bridge.md` · `docs/qc-implement-report.md`

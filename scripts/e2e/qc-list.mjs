@@ -22,7 +22,7 @@ function parseArgs(argv) {
     priority: "",
     group: "",
     id: "",
-    status: "", // stub | implemented | missing | all
+    status: "", // stub | implemented | missing | failed | passed | skipped | empty | all
     json: false,
     limit: 0,
   };
@@ -37,7 +37,8 @@ function parseArgs(argv) {
     else if (a === "--json") out.json = true;
     else if (a === "-h" || a === "--help") {
       console.log(`Usage: qc:list [--sheet NAME] [--priority High] [--group Functional] [--id TC_x.y]
-                [--status stub|implemented|missing|all] [--limit N] [--json]`);
+                [--status stub|implemented|missing|failed|passed|skipped|empty|all]
+                [--limit N] [--json]`);
       process.exit(0);
     }
   }
@@ -88,7 +89,17 @@ function main() {
   }
   if (args.group) rows = rows.filter((r) => String(r.group).toLowerCase() === args.group.toLowerCase());
   if (args.status && args.status !== "all") {
-    rows = rows.filter((r) => r.status === args.status);
+    const st = args.status.toLowerCase();
+    rows = rows.filter((r) => {
+      if (st === "stub" || st === "implemented" || st === "missing") return r.status === st;
+      if (st === "empty") return r.suspiciousEmpty;
+      if (st === "passed") return r.lastResult === "passed";
+      if (st === "skipped") return r.lastResult === "skipped";
+      if (st === "failed") {
+        return r.lastResult === "failed" || r.lastResult === "timedOut" || r.lastResult === "interrupted";
+      }
+      return r.status === args.status;
+    });
   }
   if (args.limit > 0) rows = rows.slice(0, args.limit);
 

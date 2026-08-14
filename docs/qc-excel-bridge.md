@@ -38,10 +38,23 @@ Agent dùng `npm run qc:list -- --sheet Template --priority High --status stub -
 |------|----------|
 | `qc/results.json` | Theo `qcId` (+ attachments khi fail). **Merge** theo `qcId` mỗi lần chạy (smoke/partial không xoá TC khác). `QC_RESULTS_REPLACE=1` = ghi đè toàn bộ. |
 | `qc/results.xlsx` | Write-back KQ Script/Status + sheet **QC Run Summary** |
-| `qc/coverage.html` | Dashboard catalog / stub / impl / last run |
+| `qc/coverage.html` | Dashboard **v2**: filter UI, empty-pass badge, artifact links |
+| `qc/coverage.json` | Machine-readable (version: 2) |
 | `playwright-report/` | HTML Playwright |
 | `test-results/run-<timestamp>/` | Screenshot / video / trace khi fail — **mỗi lần chạy 1 thư mục riêng**, giữ `PW_KEEP_RUNS` (mặc định 10) run gần nhất |
 | `test-results/latest` | Symlink tới run mới nhất |
+
+## Re-run helpers
+
+```bash
+npm run qc:run -- --status failed              # chỉ Fail lần trước
+npm run qc:run -- --status stub --dry-run      # list, không chạy
+npm run qc:list -- --status empty              # empty-pass suspects
+npm run qc:wave-report -- --sheet Template     # markdown standup table
+npm run test:e2e:golden                        # 3 pattern Pass mẫu
+```
+
+Golden copy-paste: [`qc-golden.md`](./qc-golden.md) · report template: [`qc-implement-report.md`](./qc-implement-report.md)
 
 ## Seed helpers
 
@@ -56,10 +69,15 @@ Dùng trong `e2e/fixtures/domains/*.ts` để seed list + `searchText` (Keyword 
 ```bash
 npm run qc:import:py
 npm run qc:list -- --sheet Template --priority High --status stub
+npm run qc:list -- --status failed
 npm run qc:coverage -- --open
 npm run qc:run -- --id TC_10.31
 npm run qc:run -- --sheet Template --priority High
+npm run qc:run -- --status failed
+npm run qc:run -- --status stub --dry-run
+npm run qc:wave-report -- --sheet Template --priority High
 npm run qc:export -- --sheet Template
+npm run test:e2e:golden
 ```
 
 ## Excel columns used

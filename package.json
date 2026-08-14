@@ -1,6 +1,6 @@
 {
   "name": "project-quality-kit",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "private": true,
   "description": "Sibling quality kit: Playwright e2e harness, QC Excel bridge, future AI-review CI modules",
   "scripts": {
@@ -9,6 +9,7 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:report": "playwright show-report",
     "test:e2e:smoke": "playwright test e2e/specs/smoke --project=mock",
+    "test:e2e:golden": "playwright test e2e/specs/golden --project=mock",
     "test:e2e-real": "cross-env PLAYWRIGHT_MODE=real playwright test --project=chromium",
     "qc:import": "node scripts/e2e/qc-import.mjs",
     "qc:import:py": "python3 scripts/e2e/qc-import.py",
@@ -17,6 +18,7 @@
     "qc:coverage": "node scripts/e2e/qc-coverage.mjs",
     "qc:run": "node scripts/e2e/qc-run.mjs",
     "qc:export": "node scripts/e2e/qc-export.mjs",
+    "qc:wave-report": "node scripts/e2e/qc-wave-report.mjs",
     "verify:base": "bash scripts/verify-base-template.sh"
   },
   "devDependencies": {

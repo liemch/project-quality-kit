@@ -1,8 +1,11 @@
 # Engine version pin — bump when publishing an upgradeable release of this kit.
-engine_version: "0.1.7"
+engine_version: "0.2.0"
 # Set by init-quality.sh in a <project>-quality clone; keep null on Base.
 initialized_at: null
 history:
+  - version: "0.2.0"
+    date: "2026-08-14"
+    notes: "Wave A QC DX — AntD form/drawer/upload/message helpers; coverage v2 filters+empty badge+artifacts; qc:run --status/--dry-run; golden TC_GOLDEN.1–3; qc:wave-report."
   - version: "0.1.7"
     date: "2026-08-13"
     notes: "Per-run artifact dirs (test-results/run-*, latest symlink, PW_KEEP_RUNS) so a new run no longer wipes previous QC artifacts."

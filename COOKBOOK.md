@@ -50,6 +50,13 @@ See [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md).
 /quality-qc-coverage
 ```
 
+```bash
+npm run qc:run -- --status failed
+npm run qc:run -- --status stub --dry-run
+npm run qc:wave-report -- --sheet Template --priority High
+npm run test:e2e:golden
+```
+
 ## 6. Ant Design helpers
 
 ```ts
@@ -59,13 +66,22 @@ await antd.searchDebounced(page, "00280129", { placeholder: "Mã, tên template"
 await expect(antd.tableRows(page)).toHaveCount(1);
 await antd.modalOk(page).click();
 await antd.confirmOk(page).click();
+
+// form / drawer / upload / toasts
+await antd.fillFormField(page, /Code/i, "TPL-0001");
+await antd.selectFormOption(page, /Status/i, /Active/i);
+await antd.uploadFiles(page, "fixtures/sample.pdf");
+await antd.expectMessageSuccess(page, /saved|thành công/i);
+await expect(antd.drawer(page)).toBeVisible();
 ```
 
 Cheatsheet (raw CSS if needed):
 
 - Rows: `.ant-table-tbody tr.ant-table-row`
 - Pagination: `.ant-pagination-item-N`
-- Prefer `getByRole` over deep CSS
+- Prefer `getByRole` / `antd.*` over deep CSS
+
+Golden copy-paste: [`docs/qc-golden.md`](./docs/qc-golden.md) · `npm run test:e2e:golden`
 
 ## 7. Seed factories
 

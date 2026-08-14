@@ -95,11 +95,21 @@ npm run qc:run -- --id TC_12.1
 | failed | **Fail** + lỗi + `test-results/` (screenshot/video/trace) |
 | skipped / blocker | Chưa kiểm được |
 
-**Batch:** bảng markdown `TC_* | Pass/Fail/Skip | note` + `npm run qc:coverage` + gợi ý `npm run qc:export -- --sheet Template`.
+**Batch:** chạy `npm run qc:wave-report -- --sheet Template --priority High` (hoặc `--ids TC_a,TC_b`) rồi dán bảng markdown cho user. Template: `docs/qc-implement-report.md`.
+
+| Kết quả | Ý nghĩa |
+|---------|---------|
+| **Pass** | `expect` thật + Playwright passed |
+| **Fail** | Lệch hệ thống — `test-results/latest/` |
+| **Skip** | stub / blocker / chưa chạy |
+| **Empty** | implemented không `expect` — **không** nghiệm thu |
+
+Gợi ý tiếp: `npm run qc:coverage -- --open` · `npm run qc:export -- --sheet Template` · `npm run qc:run -- --status failed`
 
 ## See also
 
-- `/quality-qc-coverage` — dashboard
-- `/quality-qc-run` — chạy lại
-- `/quality-qc-codegen` — chỉ khung
+- `/quality-qc-coverage` — dashboard v2 (filter + empty badge + artifacts)
+- `/quality-qc-run` — `--status failed|stub` · `--dry-run`
+- `docs/qc-golden.md` — 3 pattern Pass mẫu (`TC_GOLDEN.*`)
+- `docs/qc-implement-report.md` — template báo cáo wave
 - `docs/qc-excel-bridge.md`

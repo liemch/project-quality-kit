@@ -21,6 +21,9 @@ for f in \
   scripts/init-quality.sh \
   scripts/verify-base-template.sh \
   scripts/lib/refuse-base.mjs \
+  e2e/specs/golden/qc-golden.spec.ts \
+  docs/qc-golden.md \
+  docs/qc-implement-report.md \
   e2e/specs/qc/.gitkeep \
   e2e/pages/.gitkeep \
   playwright/.auth/.gitkeep \

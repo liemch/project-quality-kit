@@ -3,7 +3,7 @@
 > **Quality Kit engine** — sibling Playwright E2E + QC Excel (ISC) + skills `/quality*` + CI smoke + AntD helpers + auth-real scaffold.  
 > Clone thành `<project>-quality`, init cạnh `api` / `web` / `knowledge-base`.
 >
-> **Base template** (project-agnostic). Engine: **v0.1.5** · [`CHANGELOG.md`](./CHANGELOG.md)
+> **Base template** (project-agnostic). Engine: **v0.2.0** · [`CHANGELOG.md`](./CHANGELOG.md)
 
 | Ai | Đọc |
 |----|-----|
@@ -11,7 +11,7 @@
 | 👤 Vận hành | File này + [`COOKBOOK.md`](./COOKBOOK.md) |
 | 🤖 Agent | [`.claude/skills/`](./.claude/skills/README.md) |
 
-**Tài liệu thêm:** [QC bridge](./docs/qc-excel-bridge.md) · [Auth real](./docs/auth-real.md) · [CI](./ci/README.md)
+**Tài liệu thêm:** [QC bridge](./docs/qc-excel-bridge.md) · [Golden](./docs/qc-golden.md) · [Wave report](./docs/qc-implement-report.md) · [Auth real](./docs/auth-real.md) · [CI](./ci/README.md)
 
 ---
 
@@ -133,8 +133,8 @@ ai-review/  scaffold (phase 2)
 
 | Script | Việc |
 |--------|------|
-| `test:e2e:smoke` / `:headed` / `test:e2e-real` | Playwright |
-| `qc:import` · `list` · `coverage` · `codegen` · `run` · `export` | QC |
+| `test:e2e:smoke` / `:golden` / `:headed` / `test:e2e-real` | Playwright |
+| `qc:import` · `list` · `coverage` · `codegen` · `run` · `export` · `wave-report` | QC |
 | `verify:base` | Maintainer |
 
 **Env:** `PW_SKIP_WEBSERVER` · `PW_WEBSERVER_LOG` · `PW_WEBSERVER_TIMEOUT_MS` · `PW_OBSERVE` · `E2E_REAL_TOKEN` · `QC_STRICT_EMPTY`
@@ -148,12 +148,15 @@ ai-review/  scaffold (phase 2)
 ```text
 /quality-qc-import
 /quality-qc-implement --sheet X --priority High
-/quality-qc-coverage          → qc/coverage.html
+/quality-qc-coverage          → qc/coverage.html (v2 filters)
+npm run qc:run -- --status failed
+npm run qc:wave-report -- --sheet X
 npm run qc:export -- --sheet X
+npm run test:e2e:golden
 ```
 
 Pass cần `expect` thật; empty-pass bị `qc:run` cảnh báo. Fail → `test-results/latest/`.  
-Chi tiết: [`docs/qc-excel-bridge.md`](./docs/qc-excel-bridge.md).
+Chi tiết: [`docs/qc-excel-bridge.md`](./docs/qc-excel-bridge.md) · [`docs/qc-golden.md`](./docs/qc-golden.md).
 
 ---
 
@@ -220,6 +223,8 @@ Smoke / `qc:run` một phần **merge** `qc/results.json` theo `qcId` (không xo
 | [GETTING-STARTED.md](./GETTING-STARTED.md) | Từ đầu |
 | [COOKBOOK.md](./COOKBOOK.md) | Recipes |
 | [docs/qc-excel-bridge.md](./docs/qc-excel-bridge.md) | QC |
+| [docs/qc-golden.md](./docs/qc-golden.md) | Golden Pass patterns |
+| [docs/qc-implement-report.md](./docs/qc-implement-report.md) | Wave report template |
 | [docs/auth-real.md](./docs/auth-real.md) | Real auth |
 | [ci/README.md](./ci/README.md) | CI |
 | [CHANGELOG.md](./CHANGELOG.md) | Versions |

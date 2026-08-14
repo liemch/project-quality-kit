@@ -102,6 +102,7 @@ for rel in \
   e2e/fixtures/domains/example-crud.ts \
   e2e/qc \
   e2e/specs/smoke \
+  e2e/specs/golden \
   e2e/specs/auth.setup.ts \
   playwright/.auth/.gitkeep \
   e2e/pages/.gitkeep \

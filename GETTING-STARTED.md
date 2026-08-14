@@ -142,8 +142,8 @@ npm run test:e2e:smoke
 |------|-------|----------------|
 | 1 | `/quality-qc-import` | Catalog — **chưa** kiểm hệ thống |
 | 2 | `/quality-qc-implement …` | Agent viết + chạy → **Pass / Fail / Skip** |
-| 3 | `/quality-qc-coverage` | Dashboard `qc/coverage.html` |
-| 4 | `/quality-qc-run` / `qc:export` | Chạy lại / Excel `qc/results.xlsx` (có sheet **QC Run Summary**) |
+| 3 | `/quality-qc-coverage` | Dashboard `qc/coverage.html` (v2: filter + empty badge) |
+| 4 | `/quality-qc-run` / `qc:export` / `qc:wave-report` | Chạy lại / Excel / bảng standup |
 
 Anh **không** cần tự sửa `test.fixme`. `qc:run` cảnh báo **empty-pass** (test không có `expect`).
 

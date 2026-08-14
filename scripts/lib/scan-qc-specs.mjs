@@ -69,7 +69,7 @@ export function scanQcSpecs(kitRoot) {
 
   for (const file of files) {
     const src = fs.readFileSync(file, "utf8");
-    const annRe = /description:\s*["'](TC_[\d.]+)["']/g;
+    const annRe = /description:\s*["'](TC_[A-Za-z0-9_.]+)["']/g;
     let am;
     while ((am = annRe.exec(src))) {
       const id = am[1];
